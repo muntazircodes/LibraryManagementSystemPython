@@ -1,0 +1,28 @@
+# Environment
+config.py
+.env
+
+# Virtual Environment
+.venv/
+
+# Compiled Python Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and Temp Files
+*.log
+logs/
+tmp/
+
+# IDE and Editor Folders
+.vscode/
+.idea/
+
+# Migrations (Temporary)
+migrations/versions/
+
+# Node Modules (Frontend)
+node_modules/
+frontend/dist/
