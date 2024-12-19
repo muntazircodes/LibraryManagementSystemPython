@@ -1,5 +1,5 @@
-from libraries_model import libraries, location
-from app import db
+from libraries_model import Libraries, Location
+from utils.db import db
 from user_model import User
 
 

@@ -1,5 +1,5 @@
-from app import db
-from libraries_model import libraries
+from utils.db import db
+from libraries_model import Libraries
 
 # User and Report Model
 class User(db.Model):
