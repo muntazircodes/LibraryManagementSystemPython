@@ -21,7 +21,7 @@ tmp/
 .idea/
 
 # Migrations (Temporary)
-migrations/versions/
+migrations/
 
 # Node Modules (Frontend)
 node_modules/
