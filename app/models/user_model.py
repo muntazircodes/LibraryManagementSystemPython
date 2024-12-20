@@ -12,6 +12,7 @@ class User(db.Model):
     user_password = db.Column(db.String(100), nullable=False)
     user_verified = db.Column(db.Boolean, default=False, nullable=False)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
+    alloted_books = db.Column(db.Integer, default=0, nullable=False)
     user_fine = db.Column(db.Float, nullable=False)
 
     # Relationships
