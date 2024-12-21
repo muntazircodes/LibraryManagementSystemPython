@@ -1,5 +1,6 @@
 from utils.db import db
-from libraries_model import Libraries
+from sqlalchemy import Enum
+from sqlalchemy.sql import func
 
 # User and Report Model
 class User(db.Model):
@@ -7,17 +8,22 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(100), nullable=False)
-    user_email = db.Column(db.String(100), nullable=False, unique=True)
-    user_type = db.Column(db.Enum('admin', 'super_admin', 'user', name='user_type_enum'), nullable=False)
+    user_email = db.Column(db.String(255), nullable=False, unique=True)
+    user_type = db.Column(Enum('admin', 'super_admin', 'user', name='user_type_enum'), nullable=False)
     user_password = db.Column(db.String(100), nullable=False)
     user_verified = db.Column(db.Boolean, default=False, nullable=False)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
     alloted_books = db.Column(db.Integer, default=0, nullable=False)
     user_fine = db.Column(db.Float, nullable=False)
+    phone_number = db.Column(db.String(20), nullable=True)
+    profile_picture = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now(), nullable=False)
 
     # Relationships
     borrowings = db.relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
     reservations = db.relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
+    reports = db.relationship('Report', back_populates='user', cascade="all, delete-orphan")
 
 
 class Report(db.Model):
