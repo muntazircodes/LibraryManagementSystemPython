@@ -1,6 +1,5 @@
-from libraries_model import Libraries, Location
 from utils.db import db
-from user_model import User
+from sqlalchemy import Enum
 
 
 # Book and Copies Model
@@ -9,15 +8,15 @@ class Book(db.Model):
 
     book_id = db.Column(db.Integer, primary_key=True)
     book_name = db.Column(db.String(100), nullable=False)
-    book_image = db.Column(db.String(100), nullable=False)
+    book_image = db.Column(db.String(100))
     author = db.Column(db.String(100), nullable=False)
     publisher = db.Column(db.String(100), nullable=False)
     book_genre = db.Column(db.String(100), nullable=False)
     edition = db.Column(db.String(100), nullable=False)
     isbn = db.Column(db.String(100), nullable=False, unique=True)
-    price = db.Column(db.Float, nullable=False)
-    book_stock = db.Column(db.Integer, nullable=False)
-    available_stock = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, default=0.0, nullable=False)
+    book_stock = db.Column(db.Integer)
+    available_stock = db.Column(db.Integer)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
 
     # Relationships
@@ -31,12 +30,11 @@ class Copies(db.Model):
     copy_id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'), nullable=False)
     loc_id = db.Column(db.Integer, db.ForeignKey('location.loc_id'), nullable=False)
-    copy_status = db.Column(db.String(100), nullable=False)
-    copy_condition = db.Column(db.String(100), nullable=False)
-    copy_location = db.Column(db.String(100), nullable=False)
-    copy_issued = db.Column(db.String(100), nullable=False)
-    copy_returned = db.Column(db.String(100), nullable=False)
-    copy_remarks = db.Column(db.String(100), nullable=False)
+    copy_status = db.Column(db.String(100), default="Available", nullable=False)
+    copy_condition = db.Column(Enum("Excellent", "Good", "Damaged", "Torn"), default="Excellent", nullable=False)
+    copy_location = db.Column(db.String(100))
+    copy_available = db.Column(Enum("Yes", "No"), default="Yes", nullable=False)
+    copy_remarks = db.Column(db.String(100))
 
     # Relationships
     book = db.relationship('Book', back_populates='copies')
@@ -51,9 +49,9 @@ class Borrowing(db.Model):
     borrow_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     copy_id = db.Column(db.Integer, db.ForeignKey('copies.copy_id'), nullable=False)
-    borrow_date = db.Column(db.DateTime, nullable=False)
+    borrow_date = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
     return_date = db.Column(db.DateTime, nullable=False)
-    fine = db.Column(db.Float, nullable=False)
+    fine = db.Column(db.Float, default=0, nullable=False)
 
     # Relationships
     user = db.relationship('User', back_populates='borrowings')
@@ -67,7 +65,7 @@ class Reserve(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     copy_id = db.Column(db.Integer, db.ForeignKey('copies.copy_id'), nullable=False)
     reserve_time = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
-    recieving_time = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
+    receiving_time = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
     is_expired = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships

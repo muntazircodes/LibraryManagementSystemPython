@@ -1,5 +1,4 @@
 from utils.db import db
-
 # Library Model
 class Libraries(db.Model):
     __tablename__ = 'libraries'
@@ -23,11 +22,11 @@ class Location(db.Model):
 
     loc_id = db.Column(db.Integer, primary_key=True)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
-    block = db.Column(db.String(100), nullable=True)
-    floor = db.Column(db.String(100), nullable=True)
-    room = db.Column(db.String(100), nullable=True)
-    locker = db.Column(db.String(100), nullable=True)
-    rack = db.Column(db.String(100), nullable=True)
+    block = db.Column(db.String(100))
+    floor = db.Column(db.String(100))
+    room = db.Column(db.String(100))
+    locker = db.Column(db.String(100))
+    rack = db.Column(db.String(100))
 
     # Relationships
     library = db.relationship('Libraries', back_populates='locations')
