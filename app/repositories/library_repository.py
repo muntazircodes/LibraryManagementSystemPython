@@ -22,7 +22,9 @@ class LibraryRepository:
     
     @staticmethod
     def add_library(lib_name, lib_location, lib_admin, lib_licence, lib_docs, lib_email):
-        new_library = Libraries(lib_name=lib_name, lib_location=lib_location, lib_admin=lib_admin, lib_licence=lib_licence, lib_docs=lib_docs, lib_email=lib_email)
+        new_library = Libraries(lib_name=lib_name, lib_location=lib_location, lib_admin=lib_admin, 
+                                lib_licence=lib_licence, lib_docs=lib_docs, lib_email=lib_email, 
+                                Library_verified=False)
         db.session.add(new_library)
         db.session.commit()
 
@@ -34,18 +36,23 @@ class LibraryRepository:
         library.lib_admin = lib_admin
         library.lib_licence = lib_licence
         db.session.commit()
+    
     @staticmethod
     def delete_library(lib_id):
         library = Libraries.query.get(lib_id)
         db.session.delete(library)
         db.session.commit()
 
+
+class LocationRepository:
+    
     @staticmethod
     def add_location(lib_id, block, floor, room, locker, rack):
         new_location = Location(lib_id=lib_id, block=block, floor=floor, room=room, locker=locker, rack=rack)
         db.session.add(new_location)
         db.session.commit()
 
+    @staticmethod
     def delete_location(loc_id):
         location = Location.query.get(loc_id)
         db.session.delete(location)

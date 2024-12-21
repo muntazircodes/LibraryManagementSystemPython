@@ -23,17 +23,24 @@ class UserRepository:
         return User.query.filter(User.user_fine > 0).all()
     
     @staticmethod
-    def add_user(user_name, user_email, user_password, user_fine):
-        db.session.add(User(user_name=user_name, user_email=user_email, user_password=user_password, user_fine=user_fine))
+    def add_user(user_name, user_email, user_password, user_type, lib_id, user_fine, phone_number=None, profile_picture=None):
+        new_user = User(user_name=user_name, user_email=user_email, user_password=user_password, 
+                        user_type=user_type, user_verified=False, lib_id=lib_id, user_fine=user_fine, 
+                        phone_number=phone_number, profile_picture=profile_picture)
+        db.session.add(new_user)
         db.session.commit()
+        return new_user
     
     @staticmethod
-    def update_user(user_id, user_name, user_email, user_password, user_fine):
+    def update_user(user_id, user_name, user_email, user_password, user_type, user_fine, phone_number=None, profile_picture=None):
         user = User.query.get(user_id)
         user.user_name = user_name
         user.user_email = user_email
         user.user_password = user_password
+        user.user_type = user_type
         user.user_fine = user_fine
+        user.phone_number = phone_number
+        user.profile_picture = profile_picture
         db.session.commit()
 
     @staticmethod
@@ -45,10 +52,12 @@ class UserRepository:
 class ReportRepository:
     @staticmethod
     def report(user_id, subject, message, report_date, report_status, handled_by, handled):
-        db.session.add(Report(user_id=user_id, subject=subject, message=message,
-                               report_date=report_date, report_status=report_status, 
-                               handled_by=handled_by, handled=handled))
+        new_report = Report(user_id=user_id, subject=subject, message=message, 
+                            report_date=report_date, report_status=report_status, 
+                            handled_by=handled_by, handled=handled)
+        db.session.add(new_report)
         db.session.commit()
+        return new_report
 
     @staticmethod
     def get_report_by_id(report_id):

@@ -34,13 +34,18 @@ class BookRepository:
     @staticmethod
     def get_book_by_genre(genre):
         return Book.query.filter_by(book_genre=genre).all()
+    
     @staticmethod
-    def add_new_book(book_name, book_image, author, publisher, book_genre, edition, isbn, price,lib_id, book_stock):
+    def add_new_book(book_name, book_image, author, publisher, book_genre, edition, isbn, price, lib_id, book_stock):
         new_book = Book(book_name=book_name, book_image=book_image, author=author, publisher=publisher, 
-        book_genre=book_genre, edition=edition, isbn=isbn, price=price,lib_id=lib_id, book_stock=book_stock, available_stock=book_stock)
-        for _ in range(book_stock):
-            pass
+                        book_genre=book_genre, edition=edition, isbn=isbn, price=price, lib_id=lib_id, 
+                        book_stock=book_stock, available_stock=book_stock)
         db.session.add(new_book)
+        db.session.flush()  # Ensure new_book gets an ID before adding copies
+
+        copies = [Copies(book_id=new_book.book_id) for _ in range(book_stock)]
+        db.session.add_all(copies)
+        
         db.session.commit()
         return new_book
 
@@ -56,19 +61,16 @@ class CopiesRepository:
 
 
     @staticmethod
-    def add_copies(book_name, quantity):
+    def add_copies(book_id, quantity):
         try:
-
             with db.session.begin():
-
-                book = Book.query.get(book_name)
+                book = Book.query.get(book_id)
                 if not book:
                     raise ValueError("Book not found")
                 
-                copies = [Copies(book_name=book.book_name) for _ in range(quantity)]
+                copies = [Copies(book_id=book.book_id) for _ in range(quantity)]
                 db.session.add_all(copies)
                 
-        
                 book.book_stock += quantity 
                 db.session.commit() 
 
@@ -98,6 +100,88 @@ class CopiesRepository:
                 db.session.commit() 
 
             return {"message": f"Copy deleted, updated quantity for {book.book_name}: {book.book_stock}"}
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+class BorrowRepositoy:
+    @staticmethod
+    def get_all_borrowings():
+        return Borrowing.query.all()
+
+    @staticmethod
+    def get_borrowing_by_id(borrow_id):
+        return Borrowing.query.get(borrow_id)
+
+    @staticmethod
+    def get_borrowings_by_user_id(user_id):
+        return Borrowing.query.filter_by(user_id=user_id).all()
+
+    @staticmethod
+    def get_borrowings_by_copy_id(copy_id):
+        return Borrowing.query.filter_by(copy_id=copy_id).all()
+
+    @staticmethod
+    def add_new_borrowing(user_id, copy_id, return_date):
+        new_borrowing = Borrowing(user_id=user_id, copy_id=copy_id, return_date=return_date)
+        db.session.add(new_borrowing)
+        db.session.commit()
+        return new_borrowing
+
+    @staticmethod
+    def delete_borrowing(borrow_id):
+        try:
+            with db.session.begin():
+                borrowing = Borrowing.query.get(borrow_id)
+                if not borrowing:
+                    raise ValueError("Borrowing not found")
+
+                db.session.delete(borrowing)
+                db.session.commit()
+
+            return {"message": f"Borrowing deleted"}
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+class ReserveRepository:
+    @staticmethod
+    def get_all_reservations():
+        return Reserve.query.all()
+
+    @staticmethod
+    def get_reservation_by_id(reserve_id):
+        return Reserve.query.get(reserve_id)
+
+    @staticmethod
+    def get_reservations_by_user_id(user_id):
+        return Reserve.query.filter_by(user_id=user_id).all()
+
+    @staticmethod
+    def get_reservations_by_copy_id(copy_id):
+        return Reserve.query.filter_by(copy_id=copy_id).all()
+
+    @staticmethod
+    def add_new_reservation(user_id, copy_id):
+        new_reservation = Reserve(user_id=user_id, copy_id=copy_id)
+        db.session.add(new_reservation)
+        db.session.commit()
+        return new_reservation
+
+    @staticmethod
+    def delete_reservation(reserve_id):
+        try:
+            with db.session.begin():
+                reservation = Reserve.query.get(reserve_id)
+                if not reservation:
+                    raise ValueError("Reservation not found")
+
+                db.session.delete(reservation)
+                db.session.commit()
+
+            return {"message": f"Reservation deleted"}
 
         except Exception as e:
             db.session.rollback()
