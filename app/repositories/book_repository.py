@@ -1,8 +1,10 @@
 from app.models.book_model import Book, Copies, Borrowing, Reserve
+from app.models.user_model import User
 from app.utils.db import db
 
 
 class BookRepository:
+
     @staticmethod
     def get_all_books():
         return Book.query.all()
@@ -13,7 +15,7 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_name(book_name):
-        return Book.query.filter_by(book_name=book_name).all()
+        return Book.query.filter(Book.book_name.ilike(f"%{book_name}%")).all()
 
     @staticmethod
     def get_book_by_isbn(isbn):
@@ -21,11 +23,12 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_author(author):
-        return Book.query.filter_by(author=author).all()
+        return Book.query.filter_by(Book.author.ilike(f"%{author}%")).all()
+                                    
 
     @staticmethod
     def get_book_by_publisher(publisher):
-        return Book.query.filter_by(publisher=publisher).all()
+        return Book.query.filter_by(Book.publisher.ilike(f"%{publisher}%")).all()
 
     @staticmethod
     def get_book_by_edition(edition):
@@ -33,7 +36,7 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_genre(genre):
-        return Book.query.filter_by(book_genre=genre).all()
+        return Book.query.filter_by(Book.book_genre.ilike(f"%{genre}%")).all()
     
     @staticmethod
     def add_new_book(book_name, book_image, author, publisher, book_genre, edition, isbn, price, lib_id, book_stock):
@@ -41,16 +44,38 @@ class BookRepository:
                         book_genre=book_genre, edition=edition, isbn=isbn, price=price, lib_id=lib_id, 
                         book_stock=book_stock, available_stock=book_stock)
         db.session.add(new_book)
-        db.session.flush()  # Ensure new_book gets an ID before adding copies
+        db.session.flush()
 
         copies = [Copies(book_id=new_book.book_id) for _ in range(book_stock)]
         db.session.add_all(copies)
         
         db.session.commit()
         return new_book
+    
+    
+    @staticmethod
+    def delete_book(book_id):
+        try:
+            with db.session.begin():
+                book = Book.query.get(book_id)
+                if not book:
+                    raise ValueError("Book not found")
+
+                # Delete all copies of the book
+                Copies.query.filter_by(book_id=book_id).delete()
+
+                db.session.delete(book)
+                db.session.commit()
+
+            return {"message": f"Book and all its copies deleted"}
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
 
 
 class CopiesRepository:
+
     @staticmethod
     def get_all_copies():
         return Copies.query.all()
@@ -106,9 +131,13 @@ class CopiesRepository:
             raise e
         
 class BorrowRepositoy:
+
     @staticmethod
     def get_all_borrowings():
         return Borrowing.query.all()
+    
+    def get_borrowings_by_user_name(user_name):
+        return Borrowing.query.join(User, Borrowing.user_id == User.user_id).filter(User.user_name == user_name).all()
 
     @staticmethod
     def get_borrowing_by_id(borrow_id):
@@ -121,21 +150,28 @@ class BorrowRepositoy:
     @staticmethod
     def get_borrowings_by_copy_id(copy_id):
         return Borrowing.query.filter_by(copy_id=copy_id).all()
+    
+    @staticmethod
+    def get_borrowings_by_return_date(borrow_date):
+        return Borrowing.query.filter_by(borrow_date=borrow_date).all()
 
     @staticmethod
-    def add_new_borrowing(user_id, copy_id, return_date):
-        new_borrowing = Borrowing(user_id=user_id, copy_id=copy_id, return_date=return_date)
+    def add_new_borrowing(user_id, copy_id, borrow_date):
+        new_borrowing = Borrowing(user_id=user_id, copy_id=copy_id, borrow_date=borrow_date)
         db.session.add(new_borrowing)
         db.session.commit()
         return new_borrowing
 
     @staticmethod
-    def delete_borrowing(borrow_id):
+    def delete_borrowing(borrow_id, user_id):
         try:
             with db.session.begin():
                 borrowing = Borrowing.query.get(borrow_id)
                 if not borrowing:
                     raise ValueError("Borrowing not found")
+                
+                if borrowing.user_id != user_id:
+                    raise ValueError("User did not borrow this book")
 
                 db.session.delete(borrowing)
                 db.session.commit()
@@ -147,6 +183,7 @@ class BorrowRepositoy:
             raise e
         
 class ReserveRepository:
+    
     @staticmethod
     def get_all_reservations():
         return Reserve.query.all()
