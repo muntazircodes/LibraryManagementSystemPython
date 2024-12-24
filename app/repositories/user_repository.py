@@ -1,5 +1,5 @@
-from utils.db import db
-from models.user_model import User, Report
+from app.utils.db import db
+from app.models.user_model import User, Report
 
 class UserRepository:
     @staticmethod

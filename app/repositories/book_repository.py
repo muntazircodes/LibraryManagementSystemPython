@@ -1,5 +1,5 @@
-from models.book_model import Book, Copies, Borrowing, Reserve
-from utils.db import db
+from app.models.book_model import Book, Copies, Borrowing, Reserve
+from app.utils.db import db
 
 
 class BookRepository:

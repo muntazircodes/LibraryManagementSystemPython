@@ -1,4 +1,4 @@
-from utils.db import db
+from app.utils.db import db
 from sqlalchemy import Enum
 from sqlalchemy.sql import func
 

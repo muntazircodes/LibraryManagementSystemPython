@@ -1,5 +1,5 @@
-from utils.db import db
-from models.libraries_model import Libraries, Location
+from app.utils.db import db
+from app.models.libraries_model import Libraries, Location
 
 
 class LibraryRepository:
