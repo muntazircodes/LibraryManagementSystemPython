@@ -1,4 +1,4 @@
-from utils.db import db
+from app.utils.db import db
 from sqlalchemy import Enum
 
 
@@ -71,3 +71,4 @@ class Reserve(db.Model):
     # Relationships
     user = db.relationship('User', back_populates='reservations')
     copy = db.relationship('Copies', back_populates='reservations')
+    # C:\Users\munta\.vscode\LmsBackend> 
