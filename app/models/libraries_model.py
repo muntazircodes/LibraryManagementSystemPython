@@ -8,9 +8,9 @@ class Libraries(db.Model):
     lib_name = db.Column(db.String(100), nullable=False)
     lib_location = db.Column(db.String(100), nullable=False)
     lib_admin = db.Column(db.String(100), nullable=False)
+    lib_email = db.Column(db.String(100), nullable=False, unique=True)
     lib_licence = db.Column(db.String(100), nullable=False)
     lib_docs = db.Column(db.String(100), nullable=False)
-    lib_email = db.Column(db.String(100), nullable=False, unique=True)
     library_verified = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships
