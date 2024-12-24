@@ -1,8 +1,8 @@
-from utils.responses import Responses
-from utils.validators import Thevalidators
+from app.utils.responses import Responses
+from app.utils.validators import Thevalidators
 
-from repositories.book_repository import BookRepository, CopiesRepository, BorrowRepositoy , ReserveRepository
-from repositories.user_repository import UserRepository
+from app.repositories.book_repository import BookRepository, CopiesRepository, BorrowRepositoy , ReserveRepository
+from app.repositories.user_repository import UserRepository
 
 
 class BookService:
