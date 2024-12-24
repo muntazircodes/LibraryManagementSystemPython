@@ -1,4 +1,4 @@
-from utils.db import db
+from app.utils.db import db
 # Library Model
 class Libraries(db.Model):
     __tablename__ = 'libraries'
