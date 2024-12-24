@@ -6,7 +6,7 @@ from sqlalchemy import Enum
 class Book(db.Model):
     __tablename__ = 'books'
 
-    book_id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     book_name = db.Column(db.String(100), nullable=False)
     book_image = db.Column(db.String(100))
     author = db.Column(db.String(100), nullable=False)
@@ -18,7 +18,7 @@ class Book(db.Model):
     book_stock = db.Column(db.Integer)
     available_stock = db.Column(db.Integer)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
-
+    
     # Relationships
     library = db.relationship('Libraries', back_populates='books')
     copies = db.relationship('Copies', back_populates='book', cascade="all, delete-orphan")
@@ -71,4 +71,3 @@ class Reserve(db.Model):
     # Relationships
     user = db.relationship('User', back_populates='reservations')
     copy = db.relationship('Copies', back_populates='reservations')
-    # C:\Users\munta\.vscode\LmsBackend> 
