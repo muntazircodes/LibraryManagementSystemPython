@@ -15,7 +15,7 @@ class Book(db.Model):
     isbn = db.Column(db.String(100), nullable=False, unique=True)
     price = db.Column(db.Float, default=0.0, nullable=False)
     book_image = db.Column(db.String(100))
-    book_stock = db.Column(db.Integer)
+    book_stock = db.Column(db.Integer, default=0, nullable=False)
     available_stock = db.Column(db.Integer)
     lib_id = db.Column(db.Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
     
@@ -50,9 +50,7 @@ class Borrowing(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     copy_id = db.Column(db.Integer, db.ForeignKey('copies.copy_id'), nullable=False)
     borrow_date = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
-    return_date = db.Column(db.DateTime, nullable=False)
-    fine = db.Column(db.Float, default=0, nullable=False)
-
+    return_date = db.Column(db.DateTime)
     # Relationships
     user = db.relationship('User', back_populates='borrowings')
     copy = db.relationship('Copies', back_populates='borrowings')
@@ -65,7 +63,7 @@ class Reserve(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     copy_id = db.Column(db.Integer, db.ForeignKey('copies.copy_id'), nullable=False)
     reserve_time = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
-    receiving_time = db.Column(db.DateTime, server_default=db.func.current_timestamp(), nullable=False)
+    receiving_time = db.Column(db.DateTime, default=None)
     is_expired = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships

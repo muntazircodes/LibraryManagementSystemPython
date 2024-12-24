@@ -18,9 +18,7 @@ class User(db.Model):
     allowed_books = db.Column(db.Integer, default=4, nullable=False)
     alloted_books = db.Column(db.Integer, default=0, nullable=False)
     user_fine = db.Column(db.Float, default=0.0, nullable=False)
-    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now(), nullable=False)
-
+    DOJ = db.Column(db.DateTime, server_default=func.now(), nullable=False)
     # Relationships
     borrowings = db.relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
     reservations = db.relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
@@ -34,7 +32,6 @@ class Report(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    report_status = db.Column(db.String(100), nullable=False)
     handled_by = db.Column(db.String(100), nullable=False)
     handled = db.Column(db.Boolean, default=False, nullable=False)
     report_date = db.Column(db.DateTime, server_default=func.now(), nullable=False)
