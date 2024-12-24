@@ -14,7 +14,7 @@ class LibraryRepository:
     
     @staticmethod
     def get_library_by_name(lib_name):
-        return Libraries.query.filter_by(lib_name=lib_name).first()
+        return Libraries.query.filter_by(Libraries.lib_name.ilike(f"%{lib_name}%")).first()
     
     @staticmethod
     def get_library_by_email(lib_email):
@@ -29,12 +29,11 @@ class LibraryRepository:
         db.session.commit()
 
     @staticmethod
-    def update_library(lib_id, lib_name, lib_location, lib_admin, lib_licence):
+    def update_library(lib_id, lib_name, lib_location, lib_admin):
         library = Libraries.query.get(lib_id)
         library.lib_name = lib_name
         library.lib_location = lib_location
         library.lib_admin = lib_admin
-        library.lib_licence = lib_licence
         db.session.commit()
     
     @staticmethod
@@ -50,6 +49,16 @@ class LocationRepository:
     def add_location(lib_id, block, floor, room, locker, rack):
         new_location = Location(lib_id=lib_id, block=block, floor=floor, room=room, locker=locker, rack=rack)
         db.session.add(new_location)
+        db.session.commit()
+
+    @staticmethod
+    def update_location(loc_id, block, floor, room, locker, rack):
+        location = Location.query.get(loc_id)
+        location.block = block
+        location.floor = floor
+        location.room = room
+        location.locker = locker
+        location.rack = rack
         db.session.commit()
 
     @staticmethod

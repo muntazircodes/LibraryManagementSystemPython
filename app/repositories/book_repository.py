@@ -1,8 +1,10 @@
 from app.models.book_model import Book, Copies, Borrowing, Reserve
+from app.models.user_model import User
 from app.utils.db import db
 
 
 class BookRepository:
+
     @staticmethod
     def get_all_books():
         return Book.query.all()
@@ -13,7 +15,7 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_name(book_name):
-        return Book.query.filter_by(book_name=book_name).all()
+        return Book.query.filter(Book.book_name.ilike(f"%{book_name}%")).all()
 
     @staticmethod
     def get_book_by_isbn(isbn):
@@ -21,11 +23,11 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_author(author):
-        return Book.query.filter_by(author=author).all()
+        return Book.query.filter(Book.author.ilike(f"%{author}%")).all()
 
     @staticmethod
     def get_book_by_publisher(publisher):
-        return Book.query.filter_by(publisher=publisher).all()
+        return Book.query.filter(Book.publisher.ilike(f"%{publisher}%")).all()
 
     @staticmethod
     def get_book_by_edition(edition):
@@ -33,15 +35,15 @@ class BookRepository:
 
     @staticmethod
     def get_book_by_genre(genre):
-        return Book.query.filter_by(book_genre=genre).all()
-    
+        return Book.query.filter(Book.book_genre.ilike(f"%{genre}%")).all()
+
     @staticmethod
     def add_new_book(book_name, book_image, author, publisher, book_genre, edition, isbn, price, lib_id, book_stock):
         new_book = Book(book_name=book_name, book_image=book_image, author=author, publisher=publisher, 
                         book_genre=book_genre, edition=edition, isbn=isbn, price=price, lib_id=lib_id, 
                         book_stock=book_stock, available_stock=book_stock)
         db.session.add(new_book)
-        db.session.flush()  # Ensure new_book gets an ID before adding copies
+        db.session.flush()
 
         copies = [Copies(book_id=new_book.book_id) for _ in range(book_stock)]
         db.session.add_all(copies)
@@ -49,8 +51,29 @@ class BookRepository:
         db.session.commit()
         return new_book
 
+    @staticmethod
+    def delete_book(book_id):
+        try:
+            with db.session.begin():
+                book = Book.query.get(book_id)
+                if not book:
+                    raise ValueError("Book not found")
+
+                # Delete all copies of the book
+                Copies.query.filter_by(book_id=book_id).delete()
+
+                db.session.delete(book)
+                db.session.commit()
+
+            return {"message": f"Book and all its copies deleted"}
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
 
 class CopiesRepository:
+
     @staticmethod
     def get_all_copies():
         return Copies.query.all()
@@ -58,7 +81,10 @@ class CopiesRepository:
     @staticmethod
     def get_copies_by_book_id(book_id):
         return Copies.query.filter_by(book_id=book_id).all()
-
+    
+    @staticmethod
+    def get_copies_by_book_name(book_name):
+        return Copies.query.join(Book, Copies.book_id == Book.book_id).filter(Book.book_name.ilike(f"%{book_name}%")).all()
 
     @staticmethod
     def add_copies(book_id, quantity):
@@ -79,7 +105,7 @@ class CopiesRepository:
         except Exception as e:
             db.session.rollback() 
             raise e  
-        
+
     @staticmethod
     def delete_copy(copy_id):
         try:
@@ -92,7 +118,6 @@ class CopiesRepository:
 
                 db.session.delete(copy)
 
-            
                 book.book_stock -= 1
                 if book.book_stock < 0:
                     book.book_stock = 0
@@ -105,7 +130,8 @@ class CopiesRepository:
             db.session.rollback()
             raise e
         
-class BorrowRepositoy:
+class BorrowRepository:
+
     @staticmethod
     def get_all_borrowings():
         return Borrowing.query.all()
@@ -123,19 +149,30 @@ class BorrowRepositoy:
         return Borrowing.query.filter_by(copy_id=copy_id).all()
 
     @staticmethod
-    def add_new_borrowing(user_id, copy_id, return_date):
-        new_borrowing = Borrowing(user_id=user_id, copy_id=copy_id, return_date=return_date)
+    def get_borrowings_by_return_date(borrow_date):
+        return Borrowing.query.filter_by(borrow_date=borrow_date).all()
+
+    @staticmethod
+    def get_borrowings_by_user_name(user_name):
+        return Borrowing.query.join(User, Borrowing.user_id == User.user_id).filter(User.user_name == user_name).all()
+
+    @staticmethod
+    def add_new_borrowing(user_id, copy_id, borrow_date):
+        new_borrowing = Borrowing(user_id=user_id, copy_id=copy_id, borrow_date=borrow_date)
         db.session.add(new_borrowing)
         db.session.commit()
         return new_borrowing
 
     @staticmethod
-    def delete_borrowing(borrow_id):
+    def delete_borrowing(borrow_id, user_id):
         try:
             with db.session.begin():
                 borrowing = Borrowing.query.get(borrow_id)
                 if not borrowing:
                     raise ValueError("Borrowing not found")
+
+                if borrowing.user_id != user_id:
+                    raise ValueError("User did not borrow this book")
 
                 db.session.delete(borrowing)
                 db.session.commit()
@@ -145,8 +182,8 @@ class BorrowRepositoy:
         except Exception as e:
             db.session.rollback()
             raise e
-        
 class ReserveRepository:
+
     @staticmethod
     def get_all_reservations():
         return Reserve.query.all()
@@ -171,6 +208,26 @@ class ReserveRepository:
         return new_reservation
 
     @staticmethod
+    def update_reservation(reserve_id, user_id=None, copy_id=None):
+        try:
+            with db.session.begin():
+                reservation = Reserve.query.get(reserve_id)
+                if not reservation:
+                    raise ValueError("Reservation not found")
+
+                if user_id is not None:
+                    reservation.user_id = user_id
+                if copy_id is not None:
+                    reservation.copy_id = copy_id
+
+                db.session.commit()
+                return reservation
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    @staticmethod
     def delete_reservation(reserve_id):
         try:
             with db.session.begin():
@@ -181,7 +238,7 @@ class ReserveRepository:
                 db.session.delete(reservation)
                 db.session.commit()
 
-            return {"message": f"Reservation deleted"}
+            return {"message": "Reservation deleted"}
 
         except Exception as e:
             db.session.rollback()
