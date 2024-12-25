@@ -97,7 +97,7 @@ class BookRepository:
             raise e
         
 
-    class CopiesRepository:
+class CopiesRepository:
 
         @staticmethod
         def get_all_copies():
