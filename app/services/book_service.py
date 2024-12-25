@@ -47,4 +47,32 @@ class BookService:
             return Responses.not_found("User")
         
         copy = self.copy_repository.get_by_id(borrow_data.get('copy_id'))
+        if not copy:
+            return Responses.not_found("Copy")
+        
+        if not self.copy_repository.is_available(copy.id):
+            return Responses.unavailable("Copy")
+        
+        borrow = self.borrow_repository.create(borrow_data)
+        return Responses.created("Borrow", borrow)
+
+    def return_book(self, return_data):
+        borrow = self.borrow_repository.get_by_id(return_data.get('borrow_id'))
+        if not borrow:
+            return Responses.not_found("Borrow")
+        
+        self.borrow_repository.return_book(return_data.get('borrow_id'))
+        return Responses.success("Return", "Book returned successfully")
+
+    def reserve_book(self, reserve_data):
+        user = self.user_repository.get_by_id(reserve_data.get('user_id'))
+        if not user:
+            return Responses.not_found("User")
+        
+        book = self.book_repository.get_by_id(reserve_data.get('book_id'))
+        if not book:
+            return Responses.not_found("Book")
+        
+        reserve = self.reserve_repository.create(reserve_data)
+        return Responses.created("Reserve", reserve)
 
