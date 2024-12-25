@@ -1,5 +1,5 @@
 from app.utils.responses import Responses
-from app.utils.validators import Thevalidators
+from app.utils.validators import Validators
 from app.repositories.user_repository import UserRepository
 
 class UserService:
@@ -32,10 +32,10 @@ class UserService:
 
     def _validate_user_data(self, user_data):
         errors = {}
-        if 'email' in user_data and not Thevalidators.validate_email(user_data['email']):
+        if 'email' in user_data and not Validators.validate_email(user_data['email']):
             errors["email"] = "Invalid email format"
-        if 'password' in user_data and not Thevalidators.validate_password(user_data['password']):
+        if 'password' in user_data and not Validators.validate_password(user_data['password']):
             errors["password"] = "Password must be at least 8 characters"
-        if 'name' in user_data and not Thevalidators.validate_name(user_data['name']):
+        if 'name' in user_data and not Validators.validate_name(user_data['name']):
             errors["name"] = "Name must be at least 3 characters"
         return errors

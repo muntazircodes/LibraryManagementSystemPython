@@ -1,5 +1,5 @@
 from app.utils.responses import Responses
-from app.utils.validators import Thevalidators
+from app.utils.validators import Validators
 
 from app.repositories.user_repository import UserRepository
 from app.repositories.book_repository import BookRepository, CopiesRepository
@@ -16,27 +16,27 @@ class AdminService:
     def _validate_user_data(self, user_data):
 
         errors = {}
-        if 'email' in user_data and not Thevalidators.validate_email(user_data['email']):
+        if 'email' in user_data and not Validators.validate_email(user_data['email']):
             errors["email"] = "Invalid email format"
-        if 'password' in user_data and not Thevalidators.validate_password(user_data['password']):
+        if 'password' in user_data and not Validators.validate_password(user_data['password']):
             errors["password"] = "Password must be at least 8 characters"
-        if 'name' in user_data and not Thevalidators.validate_name(user_data['name']): 
+        if 'name' in user_data and not Validators.validate_name(user_data['name']): 
             errors["name"] = "Name must be at least 3 characters"
         return errors
 
     def _validate_book_data(self, book_data):
         errors = {}
-        if 'isbn' in book_data and not Thevalidators.validate_isbn(book_data['isbn']):
+        if 'isbn' in book_data and not Validators.validate_isbn(book_data['isbn']):
             errors["isbn"] = "Invalid ISBN format"
-        if 'title' in book_data and not Thevalidators.validate_name(book_data['title']):
+        if 'title' in book_data and not Validators.validate_name(book_data['title']):
             errors["title"] = "Title must be at least 3 characters"
-        if 'price' in book_data and not Thevalidators.validate_price(book_data['price']):
+        if 'price' in book_data and not Validators.validate_price(book_data['price']):
             errors["price"] = "Price must be a positive number"
         return errors
 
     def _validate_copy_data(self, copy_data):
         errors = {}
-        if 'stock' in copy_data and not Thevalidators.validate_stock(copy_data['stock']):
+        if 'stock' in copy_data and not Validators.validate_stock(copy_data['stock']):
             errors["stock"] = "Stock must be a positive number"
         return errors
 

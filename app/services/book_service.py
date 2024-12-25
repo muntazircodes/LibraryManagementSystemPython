@@ -1,5 +1,5 @@
 from app.utils.responses import Responses
-from app.utils.validators import Thevalidators
+from app.utils.validators import Validators
 
 from app.repositories.book_repository import BookRepository, CopiesRepository, BorrowRepositoy , ReserveRepository
 from app.repositories.user_repository import UserRepository
@@ -15,18 +15,18 @@ class BookService:
         self.user_repository = user_repository
 
     def create_book(self, book_data):
-        if not Thevalidators.validate_isbn(book_data.get('isbn')):
+        if not Validators.validate_isbn(book_data.get('isbn')):
             return Responses.validation_error({"isbn": "Invalid ISBN format"})
-        if not Thevalidators.validate_name(book_data.get('title')):
+        if not Validators.validate_name(book_data.get('title')):
             return Responses.validation_error({"title": "Title must be at least 3 characters"})
-        if not Thevalidators.validate_price(book_data.get('price')):
+        if not Validators.validate_price(book_data.get('price')):
             return Responses.validation_error({"price": "Price must be a positive number"})
         
         book = self.book_repository.create(book_data)
         return Responses.created("Book", book)
 
     def create_copy(self, copy_data):
-        if not Thevalidators.validate_stock(copy_data.get('stock')):
+        if not Validators.validate_stock(copy_data.get('stock')):
             return Responses.validation_error({"stock": "Stock must be a positive number"})
         
         copy = self.copy_repository.create(copy_data)
