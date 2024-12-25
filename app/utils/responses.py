@@ -1,4 +1,5 @@
 class Responses:
+    
     @staticmethod
     def success(message, data=None):
         response = {

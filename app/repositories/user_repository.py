@@ -1,13 +1,25 @@
 from app.utils.db import db
 from app.models.user_model import User, Report
 
-class UserRepository:
-    
+
+
+class UserRepository:   
     @staticmethod
-    def add_user(user_name, user_email, user_password, user_type, lib_id, user_fine, phone_number=None, profile_picture=None):
-        new_user = User(user_name=user_name, user_email=user_email, user_password=user_password, 
-                        user_type=user_type, user_verified=False, lib_id=lib_id, user_fine=user_fine, 
-                        phone_number=phone_number, profile_picture=profile_picture)
+    def add_user(user_name, user_email, user_password, user_type, lib_id, user_fine=0.0, 
+                 phone_number=None, profile_picture=None, allowed_books=4, alloted_books=0):
+        new_user = User(
+            user_name=user_name,
+            user_email=user_email,
+            user_password=user_password, 
+            user_type=user_type,
+            user_verified=False,
+            lib_id=lib_id,
+            user_fine=user_fine,
+            phone_number=phone_number,
+            profile_picture=profile_picture,
+            allowed_books=allowed_books,
+            alloted_books=alloted_books
+        )
         
         db.session.add(new_user)
         db.session.commit()
@@ -44,7 +56,8 @@ class UserRepository:
         return User.query.filter(User.user_name.ilike(f"%{user_name}%")).all()
     
     @staticmethod
-    def update_user(user_id, user_name, user_email, user_password, user_type, user_fine, phone_number=None, profile_picture=None):
+    def update_user(user_id, user_name, user_email, user_password, user_type, user_fine,
+                   phone_number=None, profile_picture=None, allowed_books=None, alloted_books=None):
         user = User.query.get(user_id)
         user.user_name = user_name
         user.user_email = user_email
@@ -53,6 +66,10 @@ class UserRepository:
         user.user_fine = user_fine
         user.phone_number = phone_number
         user.profile_picture = profile_picture
+        if allowed_books is not None:
+            user.allowed_books = allowed_books
+        if alloted_books is not None:
+            user.alloted_books = alloted_books
         db.session.commit()
     
     @staticmethod
@@ -74,6 +91,7 @@ class UserRepository:
         user.user_verified = True
         db.session.commit()
 
+
 class ReportRepository:
     @staticmethod
     def delete_report(report_id):
@@ -84,14 +102,6 @@ class ReportRepository:
     @staticmethod
     def get_report_by_id(report_id):
         return Report.query.get(report_id)
-    
-    @staticmethod
-    def get_report_by_status(report_status):
-        return Report.query.filter_by(report_status=report_status).all()
-    
-    @staticmethod
-    def get_report_by_user(user_name, report_status):
-        return Report.query.join(User).filter(User.user_name == user_name, Report.report_status == report_status).all()
     
     @staticmethod
     def get_report_by_user_id(user_id):
@@ -105,16 +115,14 @@ class ReportRepository:
         db.session.commit()
     
     @staticmethod
-    def report(user_id, subject, message, report_date, report_status, handled):
-        new_report = Report(user_id=user_id, subject=subject, message=message, 
-                            report_date=report_date, report_status=report_status, 
-                            handled_by=None, handled=handled)
+    def report(user_id, subject, message, handled_by=None, handled=False):
+        new_report = Report(
+            user_id=user_id,
+            subject=subject,
+            message=message,
+            handled_by=handled_by,
+            handled=handled
+        )
         db.session.add(new_report)
         db.session.commit()
         return new_report
-    
-    @staticmethod
-    def update_report_status(report_id, report_status):
-        report = Report.query.get(report_id)
-        report.report_status = report_status
-        db.session.commit()
