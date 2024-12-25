@@ -1,6 +1,6 @@
 import re
 
-class Thevalidators:
+class Validators:
     @staticmethod
     def validate_email(email):
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
