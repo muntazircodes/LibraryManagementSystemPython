@@ -1,22 +1,25 @@
+from flask import jsonify
+
+
 class Responses:
     
     @staticmethod
-    def success(message, data=None):
+    def success(message, data=None, status_code=200):
         response = {
             "status": "success",
             "message": message,
             "data": data
         }
-        return response
+        return jsonify(response), status_code
 
     @staticmethod
-    def error(message, errors=None):
+    def error(message, errors=None, status_code=400):
         response = {
             "status": "error",
             "message": message,
             "errors": errors
         }
-        return response
+        return jsonify(response), status_code
 
     @staticmethod
     def validation_error(errors):
@@ -25,7 +28,7 @@ class Responses:
             "message": "Validation errors occurred",
             "errors": errors
         }
-        return response
+        return jsonify(response), 422  # Unprocessable Entity
 
     @staticmethod
     def not_found(resource):
@@ -33,7 +36,7 @@ class Responses:
             "status": "error",
             "message": f"{resource} not found"
         }
-        return response
+        return jsonify(response), 404
 
     @staticmethod
     def unauthorized():
@@ -41,7 +44,7 @@ class Responses:
             "status": "error",
             "message": "Unauthorized access"
         }
-        return response
+        return jsonify(response), 401
 
     @staticmethod
     def forbidden():
@@ -49,7 +52,7 @@ class Responses:
             "status": "error",
             "message": "Forbidden action"
         }
-        return response
+        return jsonify(response), 403
 
     @staticmethod
     def conflict(message):
@@ -57,7 +60,7 @@ class Responses:
             "status": "error",
             "message": message
         }
-        return response
+        return jsonify(response), 409
 
     @staticmethod
     def server_error():
@@ -65,7 +68,7 @@ class Responses:
             "status": "error",
             "message": "An internal server error occurred. Please try again later."
         }
-        return response
+        return jsonify(response), 500
 
     @staticmethod
     def created(resource, data=None):
@@ -74,7 +77,7 @@ class Responses:
             "message": f"{resource} created successfully",
             "data": data
         }
-        return response
+        return jsonify(response), 201
 
     @staticmethod
     def updated(resource, data=None):
@@ -83,7 +86,7 @@ class Responses:
             "message": f"{resource} updated successfully",
             "data": data
         }
-        return response
+        return jsonify(response), 200
 
     @staticmethod
     def deleted(resource):
@@ -91,7 +94,7 @@ class Responses:
             "status": "success",
             "message": f"{resource} deleted successfully"
         }
-        return response
+        return jsonify(response), 200
 
     @staticmethod
     def bad_request(errors=None):
@@ -100,7 +103,7 @@ class Responses:
             "message": "Bad request",
             "errors": errors
         }
-        return response
+        return jsonify(response), 400
 
     @staticmethod
     def rate_limit_exceeded():
@@ -108,14 +111,14 @@ class Responses:
             "status": "error",
             "message": "Rate limit exceeded. Please try again later."
         }
-        return response
+        return jsonify(response), 429  # Too Many Requests
 
     @staticmethod
-    def custom(status, message, data=None, errors=None):
+    def custom(status, message, data=None, errors=None, status_code=200):
         response = {
             "status": status,
             "message": message,
             "data": data,
             "errors": errors
         }
-        return response
+        return jsonify(response), status_code
