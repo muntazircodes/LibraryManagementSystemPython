@@ -74,3 +74,16 @@ class Validators:
     @staticmethod
     def validate_boolean(value):
         return isinstance(value, bool)
+
+    @staticmethod
+    def validate_library_data(data):
+        errors = {}
+        if not Validators.validate_name(data.get('name')):
+            errors['name'] = 'Invalid name'
+        if not Validators.validate_email(data.get('email')):
+            errors['email'] = 'Invalid email'
+        if not Validators.validate_phone(data.get('phone')):
+            errors['phone'] = 'Invalid phone number'
+        if not Validators.validate_password(data.get('password')):
+            errors['password'] = 'Invalid password'
+        return errors or None
