@@ -13,64 +13,6 @@ class Responses:
         return jsonify(response), status_code
 
     @staticmethod
-    def error(message, errors=None, status_code=400):
-        response = {
-            "status": "error",
-            "message": message,
-            "errors": errors
-        }
-        return jsonify(response), status_code
-
-    @staticmethod
-    def validation_error(errors):
-        response = {
-            "status": "fail",
-            "message": "Validation errors occurred",
-            "errors": errors
-        }
-        return jsonify(response), 422  # Unprocessable Entity
-
-    @staticmethod
-    def not_found(resource):
-        response = {
-            "status": "error",
-            "message": f"{resource} not found"
-        }
-        return jsonify(response), 404
-
-    @staticmethod
-    def unauthorized():
-        response = {
-            "status": "error",
-            "message": "Unauthorized access"
-        }
-        return jsonify(response), 401
-
-    @staticmethod
-    def forbidden():
-        response = {
-            "status": "error",
-            "message": "Forbidden action"
-        }
-        return jsonify(response), 403
-
-    @staticmethod
-    def conflict(message):
-        response = {
-            "status": "error",
-            "message": message
-        }
-        return jsonify(response), 409
-
-    @staticmethod
-    def server_error():
-        response = {
-            "status": "error",
-            "message": "An internal server error occurred. Please try again later."
-        }
-        return jsonify(response), 500
-
-    @staticmethod
     def created(resource, data=None):
         response = {
             "status": "success",
@@ -96,8 +38,68 @@ class Responses:
         }
         return jsonify(response), 200
 
+
     @staticmethod
     def bad_request(errors=None):
+        response = {
+            "status": "fail",
+            "message": "Bad request",
+            "errors": errors
+        }
+        return jsonify(response), 400
+
+    @staticmethod
+    def error(message, errors=None, status_code=400):
+        response = {
+            "status": "error",
+            "message": message,
+            "errors": errors
+        }
+        return jsonify(response), status_code
+
+    @staticmethod
+    def missing_fields(fields):
+        response = {
+            "status": "fail",
+            "message": "Missing required fields",
+            "fields": fields
+        }
+        return jsonify(response), 400
+
+    @staticmethod
+    def unauthorized():
+        response = {
+            "status": "error",
+            "message": "Unauthorized access"
+        }
+        return jsonify(response), 401
+
+    @staticmethod
+    def forbidden():
+        response = {
+            "status": "error",
+            "message": "Forbidden action"
+        }
+        return jsonify(response), 403
+
+    @staticmethod
+    def not_found(resource):
+        response = {
+            "status": "error",
+            "message": f"{resource} not found"
+        }
+        return jsonify(response), 404
+
+    @staticmethod
+    def conflict(message):
+        response = {
+            "status": "error",
+            "message": message
+        }
+        return jsonify(response), 409
+
+    @staticmethod
+    def validation_error(errors):
         response = {
             "status": "fail",
             "message": "Bad request",
@@ -122,3 +124,13 @@ class Responses:
             "errors": errors
         }
         return jsonify(response), status_code
+    
+
+    @staticmethod
+    def missing_fields(fields):
+        response = {
+            "status": "fail",
+            "message": "Missing required fields",
+            "fields": fields
+        }
+        return jsonify(response), 400
