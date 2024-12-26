@@ -10,7 +10,7 @@ def register_library():
     try:
         data = request.get_json()
 
-        required_fields = ["lib_name", "lib_admin", "lib_docs", "lib_licence", "lib_email"]
+        required_fields = ["lib_name", "lib_admin", "lib_docs", "lib_licence", "lib_address"]
         missing_fields = [field for field in required_fields if field not in data or not data[field]]
         if missing_fields:
             return Responses.missing_fields(missing_fields)
@@ -33,7 +33,7 @@ def register_user():
     try:
         data = request.get_json()
 
-        required_fields = ["username", "email", "password", "lib_name"]
+        required_fields = ["username", "email", "password", "phone_number","lib_name", "valid_docs"]
         missing_fields = [field for field in required_fields if field not in data or not data[field]]
         if missing_fields:
             return Responses.missing_fields(missing_fields)
