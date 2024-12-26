@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Union
 
 class Validators:
+
     @staticmethod
     def validate_email(email: Any) -> bool:
         if not isinstance(email, str):
