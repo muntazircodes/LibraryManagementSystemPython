@@ -1,78 +1,115 @@
 from app.utils.responses import Responses
 from app.utils.validators import Validators
 
-from app.repositories.book_repository import BookRepository, CopiesRepository, BorrowRepositoy , ReserveRepository
+from app.repositories.book_repository import BorrowRepository , ReserveRepository
 from app.repositories.user_repository import UserRepository
 
-
 class BookService:
+    
+    @staticmethod
+    def borrow_book(user_id, copy_id, borrow_date):
+        try:
+            user = UserRepository.get_user_by_id(user_id)
+            if not user:
+                return Responses.not_found("User")
+            
+            if not user.user_verified:
+                return Responses.forbidden()
+            
+            if user.user_fine > 0:
+                return Responses.error("Cannot borrow book. Please clear pending fines.")
+            
+            if user.alloted_books >= user.allowed_books:
+                return Responses.error("Maximum book limit reached")
 
-    def __init__(self, book_repository: BookRepository, copy_repository: CopiesRepository, borrow_repository: BorrowRepositoy, reserve_repository: ReserveRepository, user_repository: UserRepository):
-        self.book_repository = book_repository
-        self.copy_repository = copy_repository
-        self.borrow_repository = borrow_repository
-        self.reserve_repository = reserve_repository
-        self.user_repository = user_repository
+            if not Validators.validate_date(borrow_date):
+                return Responses.validation_error({"borrow_date": "Invalid date format"})
 
-    def create_book(self, book_data):
-        if not Validators.validate_isbn(book_data.get('isbn')):
-            return Responses.validation_error({"isbn": "Invalid ISBN format"})
-        if not Validators.validate_name(book_data.get('title')):
-            return Responses.validation_error({"title": "Title must be at least 3 characters"})
-        if not Validators.validate_price(book_data.get('price')):
-            return Responses.validation_error({"price": "Price must be a positive number"})
-        
-        book = self.book_repository.create(book_data)
-        return Responses.created("Book", book)
+            borrowing = BorrowRepository.add_new_borrowing(user_id, copy_id, borrow_date)
+            
+            UserRepository.update_user(
+                user_id=user_id,
+                user_name=user.user_name,
+                user_email=user.user_email,
+                user_password=user.user_password,
+                user_type=user.user_type,
+                user_fine=user.user_fine,
+                alloted_books=user.alloted_books + 1
+            )
 
-    def create_copy(self, copy_data):
-        if not Validators.validate_stock(copy_data.get('stock')):
-            return Responses.validation_error({"stock": "Stock must be a positive number"})
+            return Responses.success("Book borrowed successfully", borrowing)
         
-        copy = self.copy_repository.create(copy_data)
-        return Responses.created("Copy", copy)
+        except ValueError as e:
+            return Responses.error(str(e))
+        except Exception as e:
+            return Responses.server_error()
 
-    def delete_book(self, book_id):
-        book = self.book_repository.get_by_id(book_id)
+    @staticmethod
+    def return_book(borrow_id, user_id):
+        try:
+            borrowing = BorrowRepository.get_borrowing_by_id(borrow_id)
+            if not borrowing:
+                return Responses.not_found("Borrowing record")
 
-        if not book:
-            return Responses.not_found("Book")
-        
-        self.book_repository.delete(book_id)
-        return Responses.deleted("Book")
+            BorrowRepository.delete_borrowing(borrow_id, user_id)
+            
+            user = UserRepository.get_user_by_id(user_id)
+            UserRepository.update_user(
+                user_id=user_id,
+                user_name=user.user_name,
+                user_email=user.user_email,
+                user_password=user.user_password,
+                user_type=user.user_type,
+                user_fine=user.user_fine,
+                alloted_books=max(0, user.alloted_books - 1)
+            )
 
-    def borrow_book(self, borrow_data):
-        user = self.user_repository.get_by_id(borrow_data.get('user_id'))
-        if not user:
-            return Responses.not_found("User")
-        
-        copy = self.copy_repository.get_by_id(borrow_data.get('copy_id'))
-        if not copy:
-            return Responses.not_found("Copy")
-        
-        if not self.copy_repository.is_available(copy.id):
-            return Responses.unavailable("Copy")
-        
-        borrow = self.borrow_repository.create(borrow_data)
-        return Responses.created("Borrow", borrow)
+            return Responses.success("Book returned successfully")
 
-    def return_book(self, return_data):
-        borrow = self.borrow_repository.get_by_id(return_data.get('borrow_id'))
-        if not borrow:
-            return Responses.not_found("Borrow")
-        
-        self.borrow_repository.return_book(return_data.get('borrow_id'))
-        return Responses.success("Return", "Book returned successfully")
+        except ValueError as e:
+            return Responses.error(str(e))
+        except Exception as e:
+            return Responses.server_error()
 
-    def reserve_book(self, reserve_data):
-        user = self.user_repository.get_by_id(reserve_data.get('user_id'))
-        if not user:
-            return Responses.not_found("User")
-        
-        book = self.book_repository.get_by_id(reserve_data.get('book_id'))
-        if not book:
-            return Responses.not_found("Book")
-        
-        reserve = self.reserve_repository.create(reserve_data)
-        return Responses.created("Reserve", reserve)
+    @staticmethod
+    def reserve_book(user_id, copy_id):
+        try:
+            user = UserRepository.get_user_by_id(user_id)
+            if not user:
+                return Responses.not_found("User")
 
+            if not user.user_verified:
+                return Responses.forbidden()
+
+            if user.user_fine > 0:
+                return Responses.error("Cannot reserve book. Please clear pending fines.")
+
+            reservation = ReserveRepository.add_new_reservation(user_id, copy_id)
+            return Responses.success("Book reserved successfully", reservation)
+
+        except ValueError as e:
+            return Responses.error(str(e))
+        except Exception as e:
+            return Responses.server_error()
+
+    @staticmethod
+    def cancel_reservation(reserve_id):
+        try:
+            ReserveRepository.delete_reservation(reserve_id)
+            return Responses.success("Reservation cancelled successfully")
+        except Exception as e:
+            return Responses.server_error()
+
+    @staticmethod
+    def update_fine(user_id, days_overdue, fine_per_day=1.0):
+        try:
+            user = UserRepository.get_user_by_id(user_id)
+            if not user:
+                return Responses.not_found("User")
+
+            new_fine = days_overdue * fine_per_day
+            UserRepository.update_user_fine(user_id, new_fine)
+            return Responses.success("Fine updated successfully")
+
+        except Exception as e:
+            return Responses.server_error()
