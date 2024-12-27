@@ -1,115 +1,103 @@
 from app.utils.responses import Responses
 from app.utils.validators import Validators
 
-from app.repositories.book_repository import BorrowRepository , ReserveRepository
+from app.repositories.book_repository import BookRepository, BorrowRepository , ReserveRepository
 from app.repositories.user_repository import UserRepository
 
 class BookService:
     
     @staticmethod
-    def borrow_book(user_id, copy_id, borrow_date):
+    def add_book(book_data):
         try:
-            user = UserRepository.get_user_by_id(user_id)
-            if not user:
-                return Responses.not_found("User")
+            if not Validators.validate_name(book_data.get('book_title')):
+                return Responses.validation_error({"title": "Invalid book title"})
             
-            if not user.user_verified:
-                return Responses.forbidden()
+            if not Validators.validate_name(book_data.get('book_author')):
+                return Responses.validation_error({"author": "Invalid author name"})
             
-            if user.user_fine > 0:
-                return Responses.error("Cannot borrow book. Please clear pending fines.")
+            if not Validators.validate_name(book_data.get('book_publisher')):
+                return Responses.validation_error({"publisher": "Invalid publisher name"})
             
-            if user.alloted_books >= user.allowed_books:
-                return Responses.error("Maximum book limit reached")
-
-            if not Validators.validate_date(borrow_date):
-                return Responses.validation_error({"borrow_date": "Invalid date format"})
-
-            borrowing = BorrowRepository.add_new_borrowing(user_id, copy_id, borrow_date)
+            if not Validators.validate_number(book_data.get('book_stock')):
+                return Responses.validation_error({"stock": "Invalid stock number"})
             
-            UserRepository.update_user(
-                user_id=user_id,
-                user_name=user.user_name,
-                user_email=user.user_email,
-                user_password=user.user_password,
-                user_type=user.user_type,
-                user_fine=user.user_fine,
-                alloted_books=user.alloted_books + 1
+            if not Validators.validate_number(book_data.get('book_price')):
+                return Responses.validation_error({"price": "Invalid price"})
+            
+            if not Validators.validate_number(book_data.get('book_category')):
+                return Responses.validation_error({"category": "Invalid category"})
+            
+            BookRepository.add_book(
+                book_title=book_data.get('book_title'),
+                book_author=book_data.get('book_author'),
+                book_publisher=book_data.get('book_publisher'),
+                book_stock=book_data.get('book_stock'),
+                book_price=book_data.get('book_price'),
+                book_category=book_data.get('book_category')
             )
-
-            return Responses.success("Book borrowed successfully", borrowing)
+            return Responses.created("Book")
+        except Exception as e:
+            return Responses.server_error()
         
-        except ValueError as e:
-            return Responses.error(str(e))
-        except Exception as e:
-            return Responses.server_error()
-
     @staticmethod
-    def return_book(borrow_id, user_id):
+    def update_book(book_id, book_data):
         try:
-            borrowing = BorrowRepository.get_borrowing_by_id(borrow_id)
-            if not borrowing:
-                return Responses.not_found("Borrowing record")
-
-            BorrowRepository.delete_borrowing(borrow_id, user_id)
+            book = BookRepository.get_book_by_id(book_id)
+            if not book:
+                return Responses.not_found("Book")
             
-            user = UserRepository.get_user_by_id(user_id)
-            UserRepository.update_user(
-                user_id=user_id,
-                user_name=user.user_name,
-                user_email=user.user_email,
-                user_password=user.user_password,
-                user_type=user.user_type,
-                user_fine=user.user_fine,
-                alloted_books=max(0, user.alloted_books - 1)
+            if not Validators.validate_name(book_data.get('book_title')):
+                return Responses.validation_error({"title": "Invalid book title"})
+            
+            if not Validators.validate_name(book_data.get('book_author')):
+                return Responses.validation_error({"author": "Invalid author name"})
+            
+            if not Validators.validate_name(book_data.get('book_publisher')):
+                return Responses.validation_error({"publisher": "Invalid publisher name"})
+            
+            if not Validators.validate_number(book_data.get('book_stock')):
+                return Responses.validation_error({"stock": "Invalid stock number"})
+            
+            if not Validators.validate_number(book_data.get('book_price')):
+                return Responses.validation_error({"price": "Invalid price"})
+            
+            if not Validators.validate_number(book_data.get('book_category')):
+                return Responses.validation_error({"category": "Invalid category"})
+            
+            BookRepository.update_book(
+                book_id=book_id,
+                book_title=book_data.get('book_title'),
+                book_author=book_data.get('book_author'),
+                book_publisher=book_data.get('book_publisher'),
+                book_stock=book_data.get('book_stock'),
+                book_price=book_data.get('book_price'),
+                book_category=book_data.get('book_category')
             )
-
-            return Responses.success("Book returned successfully")
-
-        except ValueError as e:
-            return Responses.error(str(e))
+            return Responses.success("Book updated successfully")
         except Exception as e:
             return Responses.server_error()
-
+        
     @staticmethod
-    def reserve_book(user_id, copy_id):
+    def delete_book(book_id):
         try:
-            user = UserRepository.get_user_by_id(user_id)
-            if not user:
-                return Responses.not_found("User")
-
-            if not user.user_verified:
-                return Responses.forbidden()
-
-            if user.user_fine > 0:
-                return Responses.error("Cannot reserve book. Please clear pending fines.")
-
-            reservation = ReserveRepository.add_new_reservation(user_id, copy_id)
-            return Responses.success("Book reserved successfully", reservation)
-
-        except ValueError as e:
-            return Responses.error(str(e))
+            book = BookRepository.get_book_by_id(book_id)
+            if not book:
+                return Responses.not_found("Book")
+            
+            BookRepository.delete_book(book_id)
+            return Responses.success("Book deleted successfully")
         except Exception as e:
             return Responses.server_error()
-
+        
     @staticmethod
-    def cancel_reservation(reserve_id):
+    def check_avalible_copies(book_id):
         try:
-            ReserveRepository.delete_reservation(reserve_id)
-            return Responses.success("Reservation cancelled successfully")
-        except Exception as e:
-            return Responses.server_error()
-
-    @staticmethod
-    def update_fine(user_id, days_overdue, fine_per_day=1.0):
-        try:
-            user = UserRepository.get_user_by_id(user_id)
-            if not user:
-                return Responses.not_found("User")
-
-            new_fine = days_overdue * fine_per_day
-            UserRepository.update_user_fine(user_id, new_fine)
-            return Responses.success("Fine updated successfully")
-
+            book = BookRepository.get_book_by_id(book_id)
+            if not book:
+                return Responses.not_found("Book")
+            
+            copies = BookRepository.get_copies_by_book_id(book_id)
+            available_copies = [copy for copy in copies if copy.copy_available == "Yes"]
+            return Responses.success("Available copies", available_copies)
         except Exception as e:
             return Responses.server_error()
