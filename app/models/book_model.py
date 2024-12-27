@@ -36,6 +36,7 @@ class Copies(db.Model):
     copy_remarks = db.Column(String(100))
 
     location = db.relationship('Location', back_populates='copies', lazy='joined') 
+    books = db.relationship('Books', back_populates='copies')
     borrowings = db.relationship('Borrowing', back_populates='copies', cascade="all, delete-orphan")
     reservations = db.relationship('Reserve', back_populates='copies', cascade="all, delete-orphan")
 
