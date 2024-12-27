@@ -2,8 +2,6 @@ from app.utils.db import db
 from sqlalchemy import String, Integer, Float, DateTime, Boolean, ForeignKey
 from sqlalchemy.types import Enum
 
-
-# Book and Copies Model
 class Book(db.Model):
     __tablename__ = 'books'
 
@@ -21,7 +19,6 @@ class Book(db.Model):
     available_stock = db.Column(Integer, nullable=False)
     lib_id = db.Column(Integer, ForeignKey('libraries.lib_id'), nullable=False)
     
-    # Relationships
     library = db.relationship('Libraries', back_populates='books')
     copies = db.relationship('Copies', back_populates='book', cascade="all, delete-orphan")
 
@@ -38,9 +35,7 @@ class Copies(db.Model):
     copy_available = db.Column(Enum("Yes", "No"), default="Yes", nullable=False)
     copy_remarks = db.Column(String(100))
 
-    # Relationships
-    location = db.relationship('Location', back_populates='copies', lazy='joined')
-    location = db.relationship('Location', back_populates='copies')
+    location = db.relationship('Location', back_populates='copies', lazy='joined') 
     borrowings = db.relationship('Borrowing', back_populates='copy', cascade="all, delete-orphan")
     reservations = db.relationship('Reserve', back_populates='copy', cascade="all, delete-orphan")
 
@@ -53,8 +48,8 @@ class Borrowing(db.Model):
     copy_id = db.Column(Integer, ForeignKey('copies.copy_id'), nullable=False)
     borrow_date = db.Column(DateTime, server_default=db.func.current_timestamp(), nullable=False)
     return_date = db.Column(DateTime)
-    user = db.relationship('User', back_populates='borrowings', lazy='joined')
-    user = db.relationship('User', back_populates='borrowings')
+
+    user = db.relationship('User', back_populates='borrowings')  
     copy = db.relationship('Copies', back_populates='borrowings')
 
 
@@ -68,6 +63,5 @@ class Reserve(db.Model):
     receiving_time = db.Column(DateTime, default=None)
     is_expired = db.Column(Boolean, default=False, nullable=False)
 
-    user = db.relationship('User', back_populates='reservations', lazy='joined')
-    user = db.relationship('User', back_populates='reservations')
+    user = db.relationship('User', back_populates='reservations')  
     copy = db.relationship('Copies', back_populates='reservations')
