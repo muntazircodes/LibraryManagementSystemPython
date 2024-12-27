@@ -1,10 +1,7 @@
 from app.utils.db import db
 from sqlalchemy import String, Integer, Boolean
 
-
-# Library Model
 class Libraries(db.Model):
-    """Model representing a library."""
     __tablename__ = 'libraries'
 
     lib_id = db.Column(Integer, primary_key=True, autoincrement=True)
@@ -16,17 +13,15 @@ class Libraries(db.Model):
     lib_docs = db.Column(String(100), nullable=False)
     library_verified = db.Column(Boolean, default=False, nullable=False)
 
-    # Relationships
     books = db.relationship('Book', back_populates='library', cascade="all, delete-orphan")
-    locations = db.relationship('Location', back_populates='library', cascade="all, delete-orphan")
+    locations = db.relationship('Location', back_populates='library', cascade="all, delete-orphan") 
 
 
 class Location(db.Model):
-    """Model representing a location within a library."""
-    __tablename__ = 'locations'
+    __tablename__ = 'location'
 
     loc_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    lib_id = db.Column(Integer, db.ForeignKey('libraries.lib_id'), nullable=False)
+    lib_id = db.Column(Integer, db.ForeignKey('libraries.lib_id', ondelete='CASCADE'), nullable=False) 
     block = db.Column(String(100))
     floor = db.Column(String(100))
     room = db.Column(String(100))
