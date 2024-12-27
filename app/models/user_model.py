@@ -30,9 +30,9 @@ class User(db.Model):
     
     DOJ = Column(DateTime, server_default=func.now(), nullable=False) 
 
-    borrowings = relationship('Borrowing', back_populates='users', cascade="all, delete-orphan")
-    reservations = relationship('Reserve', back_populates='users', cascade="all, delete-orphan")
-    reports = relationship('Report', back_populates='users', cascade="all, delete-orphan")
+    borrowings = relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
+    reservations = relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
+    reports = relationship('Report', back_populates='user', cascade="all, delete-orphan")
 
 class Report(db.Model):
     __tablename__ = 'reports'

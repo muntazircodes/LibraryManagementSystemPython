@@ -15,8 +15,8 @@ class Libraries(db.Model):
     lib_docs = db.Column(String(100), nullable=False)
     library_verified = db.Column(Boolean, default=False, nullable=False)
 
-    books = relationship('Books', back_populates='libraries', cascade="all, delete-orphan")
-    locations = relationship('Location', back_populates='libraries', cascade="all, delete-orphan") 
+    books = relationship('Books', back_populates='library', cascade="all, delete-orphan")
+    location = relationship('Location', back_populates='library', cascade="all, delete-orphan") 
 
 
 class Location(db.Model):
@@ -31,5 +31,5 @@ class Location(db.Model):
     rack = db.Column(String(100))
 
     # Relationships
-    library = relationship('Libraries', back_populates='locations')
+    library = relationship('Libraries', back_populates='location')
     copies = relationship('Copies', back_populates='location', cascade="all, delete-orphan")
