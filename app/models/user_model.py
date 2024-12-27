@@ -29,12 +29,12 @@ class User(db.Model):
     
     DOJ = Column(DateTime, server_default=func.now(), nullable=False) 
 
-    borrowings = db.relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
-    reservations = db.relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
-    reports = db.relationship('Report', back_populates='user', cascade="all, delete-orphan")
+    borrowings = db.relationship('Borrowing', back_populates='users', cascade="all, delete-orphan")
+    reservations = db.relationship('Reserve', back_populates='users', cascade="all, delete-orphan")
+    reports = db.relationship('Report', back_populates='users', cascade="all, delete-orphan")
 
 class Report(db.Model):
-    __tablename__ = 'report'
+    __tablename__ = 'reports'
 
     report_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)

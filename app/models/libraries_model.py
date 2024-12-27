@@ -13,8 +13,8 @@ class Libraries(db.Model):
     lib_docs = db.Column(String(100), nullable=False)
     library_verified = db.Column(Boolean, default=False, nullable=False)
 
-    books = db.relationship('Book', back_populates='library', cascade="all, delete-orphan")
-    locations = db.relationship('Location', back_populates='library', cascade="all, delete-orphan") 
+    books = db.relationship('Book', back_populates='libraries', cascade="all, delete-orphan")
+    locations = db.relationship('Location', back_populates='libraries', cascade="all, delete-orphan") 
 
 
 class Location(db.Model):
