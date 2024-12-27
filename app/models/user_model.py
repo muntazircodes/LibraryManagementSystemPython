@@ -1,6 +1,7 @@
 from app.utils.db import db
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 import enum
 
 class UserTypeEnum(enum.Enum):
@@ -29,9 +30,9 @@ class User(db.Model):
     
     DOJ = Column(DateTime, server_default=func.now(), nullable=False) 
 
-    borrowings = db.relationship('Borrowing', back_populates='users', cascade="all, delete-orphan")
-    reservations = db.relationship('Reserve', back_populates='users', cascade="all, delete-orphan")
-    reports = db.relationship('Report', back_populates='users', cascade="all, delete-orphan")
+    borrowings = relationship('Borrowing', back_populates='users', cascade="all, delete-orphan")
+    reservations = relationship('Reserve', back_populates='users', cascade="all, delete-orphan")
+    reports = relationship('Report', back_populates='users', cascade="all, delete-orphan")
 
 class Report(db.Model):
     __tablename__ = 'reports'
@@ -45,4 +46,4 @@ class Report(db.Model):
     report_date = Column(DateTime, server_default=func.now(), nullable=False)
 
     # Relationships
-    user = db.relationship('User', back_populates='reports')
+    user = relationship('User', back_populates='reports')
