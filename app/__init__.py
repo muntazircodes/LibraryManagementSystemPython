@@ -11,11 +11,11 @@ def create_app():
     migrate.init_app(app, db)
 
     with app.app_context():
-        from app.models.book_model import Book, Copies, Borrowing, Reserve
+        from app.models.book_model import Books, Copies, Borrowing, Reserve
         from app.models.libraries_model import Libraries, Location
         from app.models.user_model import User, Report
 
     return app
 
 
-__all__ = ["Libraries", "Book", "Copies", "Borrowing", "Reserve", "Location", "User", "Report"]
+__all__ = ["Libraries", "Books", "Copies", "Borrowing", "Reserve", "Location", "User", "Report"]
