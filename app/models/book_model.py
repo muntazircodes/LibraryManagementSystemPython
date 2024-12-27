@@ -21,7 +21,7 @@ class Books(db.Model):
     lib_id = db.Column(Integer, ForeignKey('libraries.lib_id'), nullable=False)
  
     library = relationship('Libraries', back_populates='books')
-    copies = relationship('Copies', back_populates='book', cascade="all, delete-orphan")  # Changed 'books' to 'book'
+    copies = relationship('Copies', back_populates='book', cascade="all, delete-orphan")
 
 
 class Copies(db.Model):
@@ -37,9 +37,9 @@ class Copies(db.Model):
     copy_remarks = db.Column(String(100))
 
     location = db.relationship('Location', back_populates='copies', lazy='joined') 
-    book = db.relationship('Book', back_populates='copies')  # Changed 'Books' to 'Book'
+    book = db.relationship('Books', back_populates='copies')  
     borrowings = db.relationship('Borrowing', back_populates='copy', cascade="all, delete-orphan")
-    reservations = db.relationship('Reserve', back_populates='copy', cascade="all, delete-orphan")
+    reservations= db.relationship('Reserve', back_populates='copy', cascade="all, delete-orphan")
 
 
 class Borrowing(db.Model):
@@ -65,5 +65,5 @@ class Reserve(db.Model):
     receiving_time = db.Column(DateTime, default=None)
     is_expired = db.Column(Boolean, default=False, nullable=False)
 
-    user = relationship('User', back_populates='reserves')  
-    copy = relationship('Copies', back_populates='reserves')
+    user = relationship('User', back_populates='reservations')  
+    copy = relationship('Copies', back_populates='reservations')
