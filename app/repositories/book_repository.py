@@ -1,4 +1,4 @@
-from app.models.book_model import Book, Copies, Borrowing, Reserve
+from app.models.book_model import Books, Copies, Borrowing, Reserve
 from app.models.user_model import User
 from app.utils.db import db
 
@@ -11,9 +11,9 @@ class BookRepository:
         try:
             with db.session.begin():
                 if BookRepository.get_book_by_isbn(isbn):
-                    raise ValueError("Book with this ISBN already exists")
+                    raise ValueError("Books with this ISBN already exists")
 
-                new_book = Book(
+                new_book = Books(
                     book_name=book_name,
                     book_image=book_image,
                     author=author,
@@ -46,7 +46,7 @@ class BookRepository:
     def update_book(book_id, **kwargs):
         try:
             with db.session.begin():
-                book = Book.query.get_or_404(book_id)
+                book = Books.query.get_or_404(book_id)
                 
                 allowed_fields = [
                     'book_name', 'book_image', 'author', 'publisher', 
@@ -57,7 +57,7 @@ class BookRepository:
                 if 'isbn' in kwargs:
                     existing_book = BookRepository.get_book_by_isbn(kwargs['isbn'])
                     if existing_book and existing_book.book_id != book_id:
-                        raise ValueError("Book with this ISBN already exists")
+                        raise ValueError("Books with this ISBN already exists")
                 
                 if 'book_stock' in kwargs:
                     new_stock = kwargs['book_stock']
@@ -79,11 +79,11 @@ class BookRepository:
     def delete_book(book_id):
         try:
             with db.session.begin():
-                book = Book.query.get_or_404(book_id)
+                book = Books.query.get_or_404(book_id)
                 Copies.query.filter_by(book_id=book_id).delete()
                 db.session.delete(book)
                 db.session.commit()
-                return {"message": f"Book and all its copies deleted"}
+                return {"message": f"Books and all its copies deleted"}
         except Exception as e:
             db.session.rollback()
             raise e
@@ -91,42 +91,42 @@ class BookRepository:
 
     @staticmethod 
     def get_all_books():
-        return Book.query.all()
+        return Books.query.all()
 
 
     @staticmethod
     def get_book_by_id(book_id):
-        return Book.query.get_or_404(book_id) 
+        return Books.query.get_or_404(book_id) 
 
 
     @staticmethod
     def get_book_by_name(book_name):
-        return Book.query.filter(Book.book_name.ilike(f"%{book_name}%")).all()
+        return Books.query.filter(Books.book_name.ilike(f"%{book_name}%")).all()
 
 
     @staticmethod 
     def get_book_by_isbn(isbn):
-        return Book.query.filter_by(isbn=isbn).first()
+        return Books.query.filter_by(isbn=isbn).first()
 
 
     @staticmethod
     def get_book_by_author(author):
-        return Book.query.filter(Book.author.ilike(f"%{author}%")).all()
+        return Books.query.filter(Books.author.ilike(f"%{author}%")).all()
 
 
     @staticmethod
     def get_book_by_publisher(publisher):
-        return Book.query.filter(Book.publisher.ilike(f"%{publisher}%")).all()
+        return Books.query.filter(Books.publisher.ilike(f"%{publisher}%")).all()
 
 
     @staticmethod
     def get_book_by_edition(edition):
-        return Book.query.filter_by(edition=edition).all()
+        return Books.query.filter_by(edition=edition).all()
 
 
     @staticmethod
     def get_book_by_genre(genre):
-        return Book.query.filter(Book.book_genre.ilike(f"%{genre}%")).all()
+        return Books.query.filter(Books.book_genre.ilike(f"%{genre}%")).all()
 
 
 class CopiesRepository:
@@ -135,9 +135,9 @@ class CopiesRepository:
     def add_copies(book_id, quantity, loc_id=1, condition="Excellent", status="Available"):
         try:
             with db.session.begin():
-                book = Book.query.get(book_id)
+                book = Books.query.get(book_id)
                 if not book:
-                    raise ValueError("Book not found")
+                    raise ValueError("Books not found")
                         
                 copies = [
                     Copies(
@@ -168,7 +168,7 @@ class CopiesRepository:
                 if not copy:
                     raise ValueError("Copy not found")
 
-                book = Book.query.get(copy.book_id)
+                book = Books.query.get(copy.book_id)
                 db.session.delete(copy)
                         
                 book.available_stock = max(0, book.available_stock - 1)
@@ -229,8 +229,8 @@ class CopiesRepository:
 
     @staticmethod
     def get_copies_by_book_name(book_name):
-        return Copies.query.join(Book, Copies.book_id == Book.book_id)\
-            .filter(Book.book_name.ilike(f"%{book_name}%")).all()
+        return Copies.query.join(Books, Copies.book_id == Books.book_id)\
+            .filter(Books.book_name.ilike(f"%{book_name}%")).all()
 
 
 class BorrowRepository:
@@ -253,7 +253,7 @@ class BorrowRepository:
                 copy.copy_available = "No"
                 copy.copy_status = "Borrowed"
 
-                book = Book.query.get(copy.book_id)
+                book = Books.query.get(copy.book_id)
                 book.available_stock = max(0, book.available_stock - 1)
                 
                 db.session.commit()
@@ -278,7 +278,7 @@ class BorrowRepository:
                 copy.copy_available = "Yes"
                 copy.copy_status = "Available"
                 
-                book = Book.query.get(copy.book_id)
+                book = Books.query.get(copy.book_id)
                 book.available_stock += 1
 
                 db.session.delete(borrowing)
