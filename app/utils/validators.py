@@ -127,3 +127,21 @@ class Validators:
             except ValueError:
                 return False
         return isinstance(stock, int) and stock >= 0
+    
+    @staticmethod
+    def validate_image(image: Any) -> bool:
+        if not isinstance(image, str):
+            return False
+        return bool(re.match(r'^data:image\/[a-z]+;base64,', image))
+    
+    @staticmethod
+    def validate_image_extension(image: Any) -> bool:
+        if not isinstance(image, str):
+            return False
+        return image.split('/')[-1] in ['jpg', 'jpeg', 'png']
+    
+    @staticmethod
+    def validat_image_size(image: Any) -> bool:
+        if not isinstance(image, str):
+            return False
+        return len(image) <= 1024*1024*2

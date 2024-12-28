@@ -136,3 +136,20 @@ class Responses:
             "errors": errors
         }
         return jsonify(response), status_code
+    
+    @staticmethod
+    def porfile_not_found():
+        response = {
+            "status": "error",
+            "message": "Profile not found"
+        }
+        return jsonify(response), 404
+    
+    @staticmethod
+    def image_uploaded(data):
+        response = {
+            "status": "success",
+            "message": "Image uploaded successfully",
+            "data": data
+        }
+        return jsonify(response), 201
