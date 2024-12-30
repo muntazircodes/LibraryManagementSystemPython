@@ -14,7 +14,6 @@ class UserService:
             return Responses.not_found("User")
         return Responses.success("User details retrieved", user)
     
-
     @staticmethod
     def update_my_profile(user_id, user_data):
         user = UserRepository.get_user_by_id(user_id)
@@ -55,6 +54,22 @@ class UserService:
     def check_my_reservations(user_id):
         reservations = UserRepository.get_user_reservations(user_id)
         return Responses.success("Reservations retrieved", reservations)
+    
+    @staticmethod
+    def change_my_pssword(user_id, old_password, new_password):
+        user = UserRepository.get_user_by_id(user_id)
+        if not user:
+            return Responses.not_found("User")
+        
+        if not Validators.verify_password(old_password, user.get('user_password')):
+            return Responses.validation_error({"password": "Invalid password"})
+        
+        if not Validators.validate_password(new_password):
+            return Responses.validation_error({"password": "Invalid password"})
+        
+        new_password = Validators.hash_password(new_password)
+        UserRepository.update_password(user_id, new_password)
+        return Responses.success("Password updated")
     
     @staticmethod
     def report_for_query(user_id, report_data):
