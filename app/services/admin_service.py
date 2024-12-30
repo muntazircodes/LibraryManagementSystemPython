@@ -47,6 +47,7 @@ class AdminService:
         except Exception as e:
             return Responses.server_error()
         
+
     @staticmethod
     def get_library(lib_id):
         try:
@@ -57,6 +58,7 @@ class AdminService:
         except Exception as e:
             return Responses.server_error()
         
+
     @staticmethod
     def get_all_admins():
         try:
@@ -64,6 +66,7 @@ class AdminService:
             return Responses.success("Admins retrieved", admins)
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def verify_library(lib_id):
@@ -78,6 +81,7 @@ class AdminService:
             return Responses.success("Library verified successfully")
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def register_user(user_data):
@@ -88,20 +92,26 @@ class AdminService:
             if not Validators.validate_name(user_data.get('user_name')):
                 return Responses.validation_error({"name": "Invalid user name"})
 
+            if not Validators.validate_password(user_data.get('user_password')):
+                return Responses.validation_error({"password": "Invalid password format"})
+
             existing_user = UserRepository.get_user_by_email(user_data.get('user_email'))
             if existing_user:
                 return Responses.conflict("User with this email already exists")
 
+            hashed_password = Validators.hash_password(user_data.get('user_password'))
+
             UserRepository.add_user(
                 user_name=user_data.get('user_name'),
                 user_email=user_data.get('user_email'),
-                user_password=user_data.get('user_password'),
+                user_password=hashed_password,
                 user_type=user_data.get('user_type'),
                 lib_id=user_data.get('lib_id')
             )
             return Responses.created("User")
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def verify_user(user_id):
@@ -116,6 +126,17 @@ class AdminService:
         except Exception as e:
             return Responses.server_error()
         
+
+    @staticmethod
+    def promote_user(user_id):
+        user = UserRepository.get_user_by_id(user_id)
+        if not user:
+            return Responses.not_found("User")
+        
+        UserRepository.promote_user(user_id)
+        return Responses.success("User promoted")
+        
+
     @staticmethod
     def verify_all_users():
         try:
@@ -123,6 +144,7 @@ class AdminService:
             return Responses.success("All users verified successfully")
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def get_defaulter_users():
@@ -131,6 +153,7 @@ class AdminService:
             return Responses.success("Defaulter users retrieved", defaulter_users)
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def track_user_fine(user_id):
@@ -141,6 +164,7 @@ class AdminService:
             return Responses.success("User fine retrieved", {"fine": user.user_fine})
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def check_user_borrowings(user_id):
@@ -149,6 +173,7 @@ class AdminService:
             return Responses.success("Borrowings retrieved", borrowings)
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def check_copy_status(copy_id):
@@ -157,6 +182,7 @@ class AdminService:
             return Responses.success("Copy status retrieved", copy)
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def calculate_and_manage_user_fine(user_id):
@@ -171,6 +197,7 @@ class AdminService:
             return Responses.success("User fine calculated and updated", {"fine": fine})
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def discard_user(user_id):
@@ -183,6 +210,7 @@ class AdminService:
             return Responses.success("User discarded successfully")
         except Exception as e:
             return Responses.server_error()
+        
 
     @staticmethod
     def check_and_update_reports(report_id, report_data):
@@ -208,4 +236,3 @@ class AdminService:
             return Responses.success("Location updated successfully")
         except Exception as e:
             return Responses.server_error()
-        
