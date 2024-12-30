@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
-from typing import Any, Union
+from typing import Any
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Validators:
@@ -82,6 +83,14 @@ class Validators:
         if not isinstance(name, str):
             return False
         return bool(re.match(r'^[A-Za-z\s-]{2,}$', name))
+    
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return generate_password_hash(password)
+    
+    @staticmethod
+    def verify_password(password: str, hashed_password: str) -> bool:
+        return check_password_hash(hashed_password, password)
 
     @staticmethod
     def validate_password(password: Any) -> bool:
