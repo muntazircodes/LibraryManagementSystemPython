@@ -2,7 +2,6 @@ from datetime import datetime
 from app.utils.responses import Responses
 from app.utils.validators import Validators
 from app.repositories.user_repository import UserRepository
-from app.repositories.book_repository import BookRepository, CopiesRepository, BorrowRepository
 
 
 class UserService:
