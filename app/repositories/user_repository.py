@@ -4,6 +4,7 @@ from app.models.user_model import User, Report
 
 
 class UserRepository:   
+
     @staticmethod
     def add_user(
         user_name, user_email, user_password, user_type, lib_id, 
@@ -27,7 +28,6 @@ class UserRepository:
         db.session.commit()
         return new_user
 
-
     @staticmethod
     def update_user(
         user_id, user_name, user_email, user_password, user_type, 
@@ -48,20 +48,17 @@ class UserRepository:
             user.alloted_books = alloted_books
         db.session.commit()
 
-
     @staticmethod
     def delete_user(user_id):
         user = User.query.get(user_id)
         db.session.delete(user)
         db.session.commit()
 
-
     @staticmethod
     def verify_user(user_id):
         user = User.query.get(user_id)
         user.user_verified = True
         db.session.commit()
-
 
     @staticmethod
     def verify_all_at_once():
@@ -70,43 +67,61 @@ class UserRepository:
             user.user_verified = True
         db.session.commit()
 
-
     @staticmethod
     def update_user_fine(user_id, fine_amount):
         user = User.query.get(user_id)
         user.user_fine = fine_amount
         db.session.commit()
 
-
     @staticmethod
     def get_all_users():
         return User.query.all()
-
 
     @staticmethod
     def get_defaulter_user():
         return User.query.filter(User.user_fine > 0).all()
 
-
+    @staticmethod
+    def check_user_fine(user_id):
+        user = User.query.get(user_id)
+        return user.user_fine if user else None
+    
     @staticmethod
     def get_unverified_users():
         return User.query.filter_by(user_verified=False).all()
 
-
     @staticmethod
-    def get_user_by_email(user_email):
+    def get_user_by_email(user_email): 
         return User.query.filter_by(user_email=user_email).first()
-
 
     @staticmethod
     def get_user_by_id(user_id):
         return User.query.get(user_id)
 
-
     @staticmethod
     def get_user_by_name(user_name):
         return User.query.filter(User.user_name.ilike(f"%{user_name}%")).all()
-         
+    
+    @staticmethod
+    def promote_as_admin(user_id):
+        user = User.query.get(user_id)
+        user.user_type = 'admin'
+        db.session.commit()
+
+    @staticmethod     
+    def get_library_admin():
+        return User.query.filter_by(user_type='admin').all()
+    
+    @staticmethod
+    def user_borrowings(user_id):
+        user = User.query.get(user_id)
+        return user.alloted_books 
+    
+    @staticmethod
+    def add_user_allowed_books(user_id, allowed_books):
+        user = User.query.get(user_id)
+        user.allowed_books += allowed_books
+        db.session.commit()
 
 
 class ReportRepository:
@@ -147,4 +162,4 @@ class ReportRepository:
         )
         db.session.add(new_report)
         db.session.commit()
-        return new_report
+        return new_report        
