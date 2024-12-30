@@ -2,15 +2,16 @@ from flask import jsonify
 
 
 class Responses:
-    
+
     @staticmethod
-    def success(message, data=None, status_code=200):
+    def success(message, data=None):
         response = {
             "status": "success",
             "message": message,
             "data": data
         }
-        return jsonify(response), status_code
+        return jsonify(response), 200
+
 
     @staticmethod
     def created(resource, data=None):
@@ -21,6 +22,7 @@ class Responses:
         }
         return jsonify(response), 201
 
+
     @staticmethod
     def updated(resource, data=None):
         response = {
@@ -29,6 +31,7 @@ class Responses:
             "data": data
         }
         return jsonify(response), 200
+
 
     @staticmethod
     def deleted(resource):
@@ -48,6 +51,7 @@ class Responses:
         }
         return jsonify(response), 400
 
+
     @staticmethod
     def error(message, errors=None, status_code=400):
         response = {
@@ -56,6 +60,7 @@ class Responses:
             "errors": errors
         }
         return jsonify(response), status_code
+
 
     @staticmethod
     def missing_fields(fields):
@@ -66,6 +71,7 @@ class Responses:
         }
         return jsonify(response), 400
 
+
     @staticmethod
     def unauthorized():
         response = {
@@ -73,6 +79,7 @@ class Responses:
             "message": "Unauthorized access"
         }
         return jsonify(response), 401
+
 
     @staticmethod
     def forbidden():
@@ -82,6 +89,7 @@ class Responses:
         }
         return jsonify(response), 403
 
+
     @staticmethod
     def not_found(resource):
         response = {
@@ -90,6 +98,7 @@ class Responses:
         }
         return jsonify(response), 404
 
+
     @staticmethod
     def conflict(message):
         response = {
@@ -97,6 +106,7 @@ class Responses:
             "message": message
         }
         return jsonify(response), 409
+
 
     @staticmethod
     def validation_error(errors):
@@ -107,13 +117,15 @@ class Responses:
         }
         return jsonify(response), 400
 
+
     @staticmethod
     def rate_limit_exceeded():
         response = {
             "status": "error",
             "message": "Rate limit exceeded. Please try again later."
         }
-        return jsonify(response), 429  # Too Many Requests
+        return jsonify(response), 429
+
 
     @staticmethod
     def custom(status, message, data=None, errors=None, status_code=200):
@@ -125,12 +137,19 @@ class Responses:
         }
         return jsonify(response), status_code
     
-
     @staticmethod
-    def missing_fields(fields):
+    def porfile_not_found():
         response = {
-            "status": "fail",
-            "message": "Missing required fields",
-            "fields": fields
+            "status": "error",
+            "message": "Profile not found"
         }
-        return jsonify(response), 400
+        return jsonify(response), 404
+    
+    @staticmethod
+    def image_uploaded(data):
+        response = {
+            "status": "success",
+            "message": "Image uploaded successfully",
+            "data": data
+        }
+        return jsonify(response), 201
