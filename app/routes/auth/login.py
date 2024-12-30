@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
 from app.models.user_model import User
+from app.utils.token import TokenManager
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -17,15 +18,18 @@ def login():
         if not user or not check_password_hash(user.password, data['password']):
             return jsonify({'message': 'Invalid email or password'}), 401
 
-        # access_token = create_access_token(identity=user.id)
+        access_token = TokenManager.generate_token(user.user_id) 
+        
+        user_type = 'admin' if user.is_admin else 'user'
         
         return jsonify({
             'message': 'Login successful',
             'access_token': access_token,
             'user': {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name
+                'id': user.user_id,
+                'email': user.user_email,
+                'name': user.user_name,
+                'type': user_type
             }
         }), 200
 
