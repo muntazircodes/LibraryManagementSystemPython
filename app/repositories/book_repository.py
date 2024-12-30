@@ -324,27 +324,27 @@ class BorrowRepository:
 class ReserveRepository:
 
     @staticmethod
-    def add_new_reservation(user_id, copy_id):
+    def add_new_reservation(user_id, book_id):
         try:
             with db.session.begin():
-                # Check if copy exists
-                copy = Copies.query.get(copy_id)
-                if not copy:
-                    raise ValueError("Copy not found")
+                # Check if book exists
+                book = Books.query.get(book_id)
+                if not book:
+                    raise ValueError("Book not found")
 
-                # Check if user has already reserved this copy
+                # Check if user has already reserved this book
                 existing_reservation = Reserve.query.filter_by(
                     user_id=user_id, 
-                    copy_id=copy_id,
+                    book_id=book_id,
                     is_expired=False
                 ).first()
                 
                 if existing_reservation:
-                    raise ValueError("User already has an active reservation for this copy")
+                    raise ValueError("User already has an active reservation for this book")
 
                 new_reservation = Reserve(
                     user_id=user_id,
-                    copy_id=copy_id,
+                    book_id=book_id,
                     is_expired=False
                 )
                 db.session.add(new_reservation)
@@ -403,5 +403,5 @@ class ReserveRepository:
 
 
     @staticmethod
-    def get_reservations_by_copy_id(copy_id):
-        return Reserve.query.filter_by(copy_id=copy_id).all()
+    def get_reservations_by_book_id(book_id):
+        return Reserve.query.filter_by(book_id=book_id).all()
