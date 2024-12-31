@@ -13,14 +13,12 @@ def login():
         if not data or not data.get('email') or not data.get('password'):
             return jsonify({'message': 'Missing email or password'}), 400
 
-        user = User.query.filter_by(email=data['email']).first()
+        user = User.query.filter_by(user_email=data['email']).first()
 
-        if not user or not check_password_hash(user.password, data['password']):
+        if not user or not check_password_hash(user.user_password, data['password']):
             return jsonify({'message': 'Invalid email or password'}), 401
 
         access_token = TokenManager.generate_token(user.user_id) 
-        
-        user_type = 'admin' if user.is_admin else 'user'
         
         return jsonify({
             'message': 'Login successful',
@@ -29,7 +27,7 @@ def login():
                 'id': user.user_id,
                 'email': user.user_email,
                 'name': user.user_name,
-                'type': user_type
+                'type': user.user_type
             }
         }), 200
 
