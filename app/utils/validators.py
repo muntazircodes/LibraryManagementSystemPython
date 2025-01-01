@@ -5,6 +5,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Validators:
+
+    @staticmethod
+    def serialize_model(instance):
+        return {column.name: getattr(instance, column.name) for column in instance.__table__.columns}
+
     
     @staticmethod
     def validate_boolean(value: Any) -> bool:

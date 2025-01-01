@@ -6,7 +6,6 @@ from app.repositories.user_repository import UserRepository, ReportRepository
 from app.repositories.library_repository import LibraryRepository, LocationRepository
 from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
-from datetime import datetime
 
 
 class AdminService:
@@ -33,7 +32,7 @@ class AdminService:
                 lib_docs=lib_data.get('lib_docs'),
                 lib_email=lib_data.get('lib_email')
             )
-            return new_library.to_dict() if hasattr(new_library, "to_dict") else new_library
+            return Validators.serialize_model(new_library)
             
         except Exception as e:
             return Responses.server_error()
