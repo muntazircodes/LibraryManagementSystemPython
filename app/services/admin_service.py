@@ -25,7 +25,7 @@ class AdminService:
             if existing_library:
                 return Responses.conflict("Library with this email already exists")
 
-            LibraryRepository.add_library(
+            new_library = LibraryRepository.add_library(
                 lib_name=lib_data.get('lib_name'),
                 lib_location=lib_data.get('lib_location'),
                 lib_admin=lib_data.get('lib_admin'),
@@ -33,8 +33,8 @@ class AdminService:
                 lib_docs=lib_data.get('lib_docs'),
                 lib_email=lib_data.get('lib_email')
             )
-
-            return Responses.created("Library")
+            return new_library.to_dict() if hasattr(new_library, "to_dict") else new_library
+            
         except Exception as e:
             return Responses.server_error()
         
@@ -101,14 +101,14 @@ class AdminService:
 
             hashed_password = Validators.hash_password(user_data.get('user_password'))
 
-            UserRepository.add_user(
+            new_user = UserRepository.add_user(
                 user_name=user_data.get('user_name'),
                 user_email=user_data.get('user_email'),
                 user_password=hashed_password,
                 user_type=user_data.get('user_type'),
                 lib_id=user_data.get('lib_id')
             )
-            return Responses.created("User")
+            return new_user.to_dict() if hasattr(new_user,"to_dict") else new_user
         except Exception as e:
             return Responses.server_error()
         
