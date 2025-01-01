@@ -3,11 +3,22 @@ from flask import jsonify
 class Responses:
 
     @staticmethod
+    def to_serializable(data):
+        if hasattr(data, "to_dict"):
+            return data.to_dict()
+        elif isinstance(data, list):
+            return [item.to_dict() if hasattr(item, "to_dict") else item for item in data]
+        elif isinstance(data, (dict, str, int, float, bool, type(None))):
+            return data
+        else:
+            return str(data)
+
+    @staticmethod
     def success(message, data=None):
         response = {
             "status": "success",
             "message": message,
-            "data": data
+            "data": Responses.to_serializable(data)
         }
         return jsonify(response), 200
 
@@ -16,7 +27,7 @@ class Responses:
         response = {
             "status": "success",
             "message": f"{resource} created successfully",
-            "data": data
+            "data": Responses.to_serializable(data)
         }
         return jsonify(response), 201
 
@@ -25,7 +36,7 @@ class Responses:
         response = {
             "status": "success",
             "message": f"{resource} updated successfully",
-            "data": data
+            "data": Responses.to_serializable(data)
         }
         return jsonify(response), 200
 
@@ -42,7 +53,7 @@ class Responses:
         response = {
             "status": "fail",
             "message": "Bad request",
-            "errors": errors
+            "errors": Responses.to_serializable(errors)
         }
         return jsonify(response), 400
 
@@ -51,7 +62,7 @@ class Responses:
         response = {
             "status": "error",
             "message": message,
-            "errors": errors
+            "errors": Responses.to_serializable(errors)
         }
         return jsonify(response), status_code
 
@@ -60,7 +71,7 @@ class Responses:
         response = {
             "status": "fail",
             "message": "Missing required fields",
-            "fields": fields
+            "fields": Responses.to_serializable(fields)
         }
         return jsonify(response), 400
 
@@ -109,7 +120,7 @@ class Responses:
         response = {
             "status": "fail",
             "message": "Bad request",
-            "errors": errors
+            "errors": Responses.to_serializable(errors)
         }
         return jsonify(response), 400
 
@@ -126,8 +137,8 @@ class Responses:
         response = {
             "status": status,
             "message": message,
-            "data": data,
-            "errors": errors
+            "data": Responses.to_serializable(data),
+            "errors": Responses.to_serializable(errors)
         }
         return jsonify(response), status_code
 
@@ -144,6 +155,6 @@ class Responses:
         response = {
             "status": "success",
             "message": "Image uploaded successfully",
-            "data": data
+            "data": Responses.to_serializable(data)
         }
         return jsonify(response), 201
