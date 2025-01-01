@@ -36,16 +36,15 @@ class AdminService:
             
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def get_all_libraries():
         try:
             libraries = LibraryRepository.get_all_libraries()
-            return Responses.success("Libraries retrieved", libraries)
+            serialized_libraries = [Validators.serialize_model(lib) for lib in libraries]
+            return Responses.success("Libraries retrieved", serialized_libraries)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def get_library(lib_id):
@@ -53,19 +52,18 @@ class AdminService:
             library = LibraryRepository.get_library_by_id(lib_id)
             if not library:
                 return Responses.not_found("Library")
-            return Responses.success("Library retrieved", library)
+            return Validators.serialize_model(library)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def get_all_admins():
         try:
             admins = UserRepository.get_library_admin()
-            return Responses.success("Admins retrieved", admins)
+            serialized_admins = [Validators.serialize_model(admin) for admin in admins]
+            return Responses.success("Admins retrieved", serialized_admins)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def verify_library(lib_id):
@@ -76,11 +74,9 @@ class AdminService:
 
             library.library_verified = True
             db.session.commit()
-
-            return Responses.success("Library verified successfully")
+            return Validators.serialize_model(library)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def register_user(user_data):
@@ -107,10 +103,9 @@ class AdminService:
                 user_type=user_data.get('user_type'),
                 lib_id=user_data.get('lib_id')
             )
-            return new_user.to_dict() if hasattr(new_user,"to_dict") else new_user
+            return Validators.serialize_model(new_user)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def verify_user(user_id):
@@ -121,38 +116,30 @@ class AdminService:
 
             user.user_verified = True
             db.session.commit()
-            return Responses.success("User verified successfully")
+            return Validators.serialize_model(user)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def promote_user(user_id):
-        user = UserRepository.get_user_by_id(user_id)
-        if not user:
-            return Responses.not_found("User")
-        
-        UserRepository.promote_user(user_id)
-        return Responses.success("User promoted")
-        
-
-    @staticmethod
-    def verify_all_users():
         try:
-            UserRepository.verify_all_at_once()
-            return Responses.success("All users verified successfully")
+            user = UserRepository.get_user_by_id(user_id)
+            if not user:
+                return Responses.not_found("User")
+
+            UserRepository.promote_user(user_id)
+            return Validators.serialize_model(user)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def get_defaulter_users():
         try:
             defaulter_users = UserRepository.get_defaulter_user()
-            return Responses.success("Defaulter users retrieved", defaulter_users)
+            serialized_defaulters = [Validators.serialize_model(user) for user in defaulter_users]
+            return Responses.success("Defaulter users retrieved", serialized_defaulters)
         except Exception as e:
             return Responses.server_error()
-        
 
     @staticmethod
     def track_user_fine(user_id):
@@ -160,29 +147,29 @@ class AdminService:
             user = UserRepository.get_user_by_id(user_id)
             if not user:
                 return Responses.not_found("User")
-            return Responses.success("User fine retrieved", {"fine": user.user_fine})
+            return Validators.serialize_model(user)
         except Exception as e:
             return Responses.server_error()
-        
 
+        
     @staticmethod
     def check_user_borrowings(user_id):
         try:
             borrowings = BorrowRepository.get_borrowings_by_user_id(user_id)
-            return Responses.success("Borrowings retrieved", borrowings)
+            serialized_borrowings = [Validators.serialize_model(borrowing) for borrowing in borrowings]
+            return Responses.success("Borrowings retrieved", serialized_borrowings)
         except Exception as e:
             return Responses.server_error()
-        
-
+            
     @staticmethod
     def check_copy_status(copy_id):
         try:
             copy = CopiesRepository.get_copies_by_book_id(copy_id)
-            return Responses.success("Copy status retrieved", copy)
+            serialized_copy = Validators.serialize_model(copy)
+            return Responses.success("Copy status retrieved", serialized_copy)
         except Exception as e:
             return Responses.server_error()
-        
-
+            
     @staticmethod
     def calculate_and_manage_user_fine(user_id):
         try:
@@ -193,11 +180,11 @@ class AdminService:
             fine = UserRepository.calculate_fine(user_id)
             user.user_fine = fine
             db.session.commit()
-            return Responses.success("User fine calculated and updated", {"fine": fine})
+            serialized_user = Validators.serialize_model(user)
+            return Responses.success("User fine calculated and updated", {"fine": fine, "user": serialized_user})
         except Exception as e:
             return Responses.server_error()
-        
-
+            
     @staticmethod
     def discard_user(user_id):
         try:
@@ -209,8 +196,7 @@ class AdminService:
             return Responses.success("User discarded successfully")
         except Exception as e:
             return Responses.server_error()
-        
-
+            
     @staticmethod
     def check_and_update_reports(report_id, report_data):
         try:
@@ -220,11 +206,12 @@ class AdminService:
 
             ReportRepository.mark_report_handled(report_id, report_data.get('handled_by'))
             db.session.commit()
-            return Responses.success("Report updated successfully")
+            serialized_report = Validators.serialize_model(report)
+            return Responses.success("Report updated successfully", serialized_report)
         except Exception as e:
             return Responses.server_error()
-        
-
+            
+    @staticmethod
     def update_location(loc_id):
         try:
             location = LocationRepository.get_location_by_id(loc_id)
@@ -232,6 +219,7 @@ class AdminService:
                 return Responses.not_found("Location")
 
             LocationRepository.update_location(loc_id)
-            return Responses.success("Location updated successfully")
+            serialized_location = Validators.serialize_model(location)
+            return Responses.success("Location updated successfully", serialized_location)
         except Exception as e:
             return Responses.server_error()
