@@ -30,7 +30,7 @@ class BookService:
             if not Validators.validate_number(book_data.get('book_category')):
                 return Responses.validation_error({"category": "Invalid category"})
 
-            BookRepository.add_book(
+            new_book = BookRepository.add_book(
                 book_title=book_data.get('book_title'),
                 book_author=book_data.get('book_author'),
                 book_publisher=book_data.get('book_publisher'),
@@ -38,7 +38,8 @@ class BookService:
                 book_price=book_data.get('book_price'),
                 book_category=book_data.get('book_category')
             )
-            return Responses.created("Book")
+            serialized_book = Validators.serialize_model(new_book)
+            return Responses.created("Book", serialized_book)
         except Exception as e:
             return Responses.server_error()
 
@@ -67,7 +68,7 @@ class BookService:
             if not Validators.validate_number(book_data.get('book_category')):
                 return Responses.validation_error({"category": "Invalid category"})
 
-            BookRepository.update_book(
+            updated_book = BookRepository.update_book(
                 book_id=book_id,
                 book_title=book_data.get('book_title'),
                 book_author=book_data.get('book_author'),
@@ -76,7 +77,8 @@ class BookService:
                 book_price=book_data.get('book_price'),
                 book_category=book_data.get('book_category')
             )
-            return Responses.success("Book updated successfully")
+            serialized_book = Validators.serialize_model(updated_book)
+            return Responses.success("Book updated successfully", serialized_book)
         except Exception as e:
             return Responses.server_error()
 
@@ -98,7 +100,8 @@ class BookService:
             books = BookRepository.get_books_by_title(book_title)
             if not books:
                 return Responses.not_found("Books")
-            return Responses.success("Books retrieved", books)
+            serialized_books = [Validators.serialize_model(book) for book in books]
+            return Responses.success("Books retrieved", serialized_books)
         except Exception as e:
             return Responses.server_error()
 
@@ -108,7 +111,8 @@ class BookService:
             books = BookRepository.get_books_by_title(book_title)
             if not books:
                 return Responses.not_found("Books")
-            return Responses.success("Books retrieved", books)
+            serialized_books = [Validators.serialize_model(book) for book in books]
+            return Responses.success("Books retrieved", serialized_books)
         except Exception as e:
             return Responses.server_error()
 
@@ -121,7 +125,8 @@ class BookService:
 
             copies = BookRepository.get_copies_by_book_id(book_id)
             available_copies = [copy for copy in copies if copy.copy_available == "Yes"]
-            return Responses.success("Available copies", available_copies)
+            serialized_copies = [Validators.serialize_model(copy) for copy in available_copies]
+            return Responses.success("Available copies", serialized_copies)
         except Exception as e:
             return Responses.server_error()
 
@@ -135,11 +140,12 @@ class BookService:
             if not Validators.validate_number(copies_data.get('copies')):
                 return Responses.validation_error({"copies": "Invalid copies number"})
 
-            CopiesRepository.add_copies(
+            new_copies = CopiesRepository.add_copies(
                 book_id=book_id,
                 copies=copies_data.get('copies')
             )
-            return Responses.success("Copies added successfully")
+            serialized_copies = Validators.serialize_model(new_copies)
+            return Responses.success("Copies added successfully", serialized_copies)
         except Exception as e:
             return Responses.server_error()
 
@@ -166,12 +172,13 @@ class BookService:
             if not available_copy:
                 return Responses.bad_request("No available copies found")
 
-            BorrowRepository.add_new_borrowing(
+            new_borrowing = BorrowRepository.add_new_borrowing(
                 user_id=user_id,
                 copy_id=available_copy.copy_id,
                 borrow_date=datetime.now()
             )
-            return Responses.success("Book borrowed successfully")
+            serialized_borrowing = Validators.serialize_model(new_borrowing)
+            return Responses.success("Book borrowed successfully", serialized_borrowing)
         except Exception as e:
             return Responses.server_error()
 
@@ -219,7 +226,8 @@ class BookService:
                 return Responses.bad_request("User has outstanding fines")
 
             reservation_expiry = datetime.now() + timedelta(hours=3)
-            ReserveRepository.add_new_reservation(user_id, book_id, datetime.now(), reservation_expiry)
-            return Responses.success("Book reserved successfully")
+            new_reservation = ReserveRepository.add_new_reservation(user_id, book_id, datetime.now(), reservation_expiry)
+            serialized_reservation = Validators.serialize_model(new_reservation)
+            return Responses.success("Book reserved successfully", serialized_reservation)
         except Exception as e:
             return Responses.server_error()

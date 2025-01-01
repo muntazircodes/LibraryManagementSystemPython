@@ -6,13 +6,13 @@ from app.repositories.user_repository import UserRepository
 
 class UserService:
 
-               
     @staticmethod 
     def get_my_profile(user_id):
         user = UserRepository.get_user_by_id(user_id)
         if not user:
             return Responses.not_found("User")
-        return Responses.success("User details retrieved", user)
+        serialized_user = Validators.serialize_model(user)
+        return Responses.success("User details retrieved", serialized_user)
     
     @staticmethod
     def update_my_profile(user_id, user_data):
@@ -48,15 +48,17 @@ class UserService:
     @staticmethod
     def check_my_borrowings(user_id):
         borrowings = UserRepository.get_user_borrowings(user_id)
-        return Responses.success("Borrowings retrieved", borrowings)
+        serialized_borrowings = [Validators.serialize_model(borrowing) for borrowing in borrowings]
+        return Responses.success("Borrowings retrieved", serialized_borrowings)
     
     @staticmethod
     def check_my_reservations(user_id):
         reservations = UserRepository.get_user_reservations(user_id)
-        return Responses.success("Reservations retrieved", reservations)
+        serialized_reservations = [Validators.serialize_model(reservation) for reservation in reservations]
+        return Responses.success("Reservations retrieved", serialized_reservations)
     
     @staticmethod
-    def change_my_pssword(user_id, old_password, new_password):
+    def change_my_password(user_id, old_password, new_password):
         user = UserRepository.get_user_by_id(user_id)
         if not user:
             return Responses.not_found("User")
@@ -82,7 +84,7 @@ class UserService:
         if not Validators.validate_name(report_data.get('handled_by')):
             return Responses.validation_error({"handled_by": "Invalid handler name"})
         
-        UserRepository.add_report(
+        report = UserRepository.add_report(
             user_id=user_id,
             subject=report_data.get('subject'),
             message=report_data.get('message'),
@@ -90,4 +92,5 @@ class UserService:
             handled=report_data.get('handled', False),
             report_date=datetime.now()
         )
-        return Responses.created("Report")
+        serialized_report = Validators.serialize_model(report)
+        return Responses.created("Report", serialized_report)
