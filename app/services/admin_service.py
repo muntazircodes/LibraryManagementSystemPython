@@ -25,9 +25,9 @@ class AdminService:
 
             new_library = LibraryRepository.add_library(
                 lib_name=lib_data.get('lib_name'),
-                lib_adress=lib_data.get('lib_adress'),
+                lib_address=lib_data.get('lib_address'),
                 lib_admin=lib_data.get('lib_admin'),
-                lib_licence=lib_data.get('lib_licence'),
+                lib_license=lib_data.get('lib_license'),
                 lib_docs=lib_data.get('lib_docs'),
                 lib_email=lib_data.get('lib_email')
             )
