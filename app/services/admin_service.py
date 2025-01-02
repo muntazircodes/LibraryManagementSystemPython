@@ -25,7 +25,7 @@ class AdminService:
 
             new_library = LibraryRepository.add_library(
                 lib_name=lib_data.get('lib_name'),
-                lib_location=lib_data.get('lib_location'),
+                lib_adress=lib_data.get('lib_adress'),
                 lib_admin=lib_data.get('lib_admin'),
                 lib_licence=lib_data.get('lib_licence'),
                 lib_docs=lib_data.get('lib_docs'),
@@ -39,8 +39,10 @@ class AdminService:
     def get_all_libraries():
         try:
             libraries = LibraryRepository.get_all_libraries()
+            if not libraries:
+                return Responses.not_found("Libraries")
             serialized_libraries = [Validators.serialize_model(lib) for lib in libraries]
-            return Responses.success("Libraries retrieved", serialized_libraries)
+            return f"{serialized_libraries}\n {Responses.success("Libraries retrieved")}"
         except Exception as e:
             return Responses.server_error()
 
@@ -67,20 +69,6 @@ class AdminService:
         except Exception as e:
             return Responses.server_error()
 
-    @staticmethod
-    def check_if_email_exists(email):
-        try:
-            existing_user = UserRepository.get_user_by_email(email)
-            if existing_user:
-                return Responses.conflict("User with this email already exists")
-
-            existing_library = LibraryRepository.get_library_by_email(email)
-            if existing_library:
-                return Responses.conflict("Library with this email already exists")
-
-            return Responses.success("Email is unique")
-        except Exception as e:
-            return Responses.server_error()
 
     @staticmethod
     def register_user(user_data):
@@ -107,9 +95,12 @@ class AdminService:
                 user_type=user_data.get('user_type'),
                 lib_id=user_data.get('lib_id')
             )
+
             return Validators.serialize_model(new_user)
+
         except Exception as e:
             return Responses.server_error()
+
 
     @staticmethod
     def verify_user(user_id):
@@ -140,8 +131,10 @@ class AdminService:
     def get_all_admins():
         try:
             admins = UserRepository.get_library_admin()
+            if not admins:
+                return Responses.not_found("Admins")
             serialized_admins = [Validators.serialize_model(admin) for admin in admins]
-            return Responses.success("Admins retrieved", serialized_admins)
+            return f"{Responses.success("Admins retrieved")}\n {serialized_admins}"
         except Exception as e:
             return Responses.server_error()
 
@@ -150,7 +143,7 @@ class AdminService:
         try:
             defaulter_users = UserRepository.get_defaulter_user()
             serialized_defaulters = [Validators.serialize_model(user) for user in defaulter_users]
-            return Responses.success("Defaulter users retrieved", serialized_defaulters)
+            return f"{Responses.success("Defaulter users retrieved")}\n{serialized_defaulters})"
         except Exception as e:
             return Responses.server_error()
 
@@ -160,7 +153,8 @@ class AdminService:
             user = UserRepository.get_user_by_id(user_id)
             if not user:
                 return Responses.not_found("User")
-            return Validators.serialize_model(user)
+            user_fine = Validators.serialize_model(user)
+            return f"{Responses.success('User fine retrieved')}\n{user_fine}"
         except Exception as e:
             return Responses.server_error()
 
@@ -169,7 +163,7 @@ class AdminService:
         try:
             borrowings = BorrowRepository.get_borrowings_by_user_id(user_id)
             serialized_borrowings = [Validators.serialize_model(borrowing) for borrowing in borrowings]
-            return Responses.success("Borrowings retrieved", serialized_borrowings)
+            return f"{Responses.success('User borrowings retrieved')}\n{serialized_borrowings}"
         except Exception as e:
             return Responses.server_error()
 
@@ -178,7 +172,7 @@ class AdminService:
         try:
             copy = CopiesRepository.get_copies_by_book_id(copy_id)
             serialized_copy = Validators.serialize_model(copy)
-            return Responses.success("Copy status retrieved", serialized_copy)
+            return f"{Responses.success('Copy status retrieved')}\n{serialized_copy}"
         except Exception as e:
             return Responses.server_error()
 
@@ -193,7 +187,7 @@ class AdminService:
             user.user_fine = fine
             db.session.commit()
             serialized_user = Validators.serialize_model(user)
-            return Responses.success("User fine calculated and updated", {"fine": fine, "user": serialized_user})
+            return f"{Responses.success('User fine calculated')}\n{ {"fine": fine, "user": serialized_user}}"
         except Exception as e:
             return Responses.server_error()
 
@@ -219,7 +213,7 @@ class AdminService:
             ReportRepository.mark_report_handled(report_id, report_data.get('handled_by'))
             db.session.commit()
             serialized_report = Validators.serialize_model(report)
-            return Responses.success("Report updated successfully", serialized_report)
+            return f"{Responses.success('Report updated successfully')}\n{serialized_report}"
         except Exception as e:
             return Responses.server_error()
 
@@ -232,6 +226,6 @@ class AdminService:
 
             RacksRepository.update_rack(rack_id)
             serialized_rack = Validators.serialize_model(rack)
-            return Responses.success("Location updated successfully", serialized_rack)
+            return f"{Responses.success('Rack updated successfully')}\n{serialized_rack}"
         except Exception as e:
             return Responses.server_error()
