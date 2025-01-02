@@ -21,7 +21,7 @@ class Books(db.Model):
     lib_id = db.Column(Integer, ForeignKey('libraries.lib_id'), nullable=False)
  
     library = relationship('Libraries', back_populates='books')
-    copies = relationship('Copies', back_populates='book', cascade="all, delete-orphan")
+    copies = relationship('Copies', back_populates='books', cascade="all, delete-orphan")
 
 
 class Copies(db.Model):
@@ -29,15 +29,16 @@ class Copies(db.Model):
 
     copy_id = db.Column(Integer, primary_key=True)
     book_id = db.Column(Integer, ForeignKey('books.book_id'), nullable=False)
-    loc_id = db.Column(Integer, ForeignKey('location.loc_id'), nullable=False)
+    rack_id = db.Column(Integer, ForeignKey('rack.rack_id'), nullable=False)
     copy_status = db.Column(String(100), default="Available", nullable=False)
-    copy_condition = db.Column(Enum("Excellent", "Good", "Damaged", "Torn"), default="Excellent", nullable=False)
-    copy_location = db.Column(String(100))
+    condition = db.Column(Enum("New", "Good", "Fair", "Damaged"), default="New", nullable=False)
+    copy_rack = db.Column(String(100))
     copy_available = db.Column(Enum("Yes", "No"), default="Yes", nullable=False)
     copy_remarks = db.Column(String(100))
 
-    location = db.relationship('Location', back_populates='copies', lazy='joined') 
-    book = db.relationship('Books', back_populates='copies')  
+    
+    rack = db.relationship('Racks', back_populates='copies', lazy='joined') 
+    books = db.relationship('Books', back_populates='copies')  
     borrowings = db.relationship('Borrowing', back_populates='copy', cascade="all, delete-orphan")
     reservations= db.relationship('Reserve', back_populates='copy', cascade="all, delete-orphan")
 
