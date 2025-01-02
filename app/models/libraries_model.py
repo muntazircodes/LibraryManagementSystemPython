@@ -1,6 +1,5 @@
 from app.utils.db import db
 from sqlalchemy import String, Integer, Boolean
-from app.models.book_model import Books
 from sqlalchemy.orm import relationship
 
 class Libraries(db.Model):
