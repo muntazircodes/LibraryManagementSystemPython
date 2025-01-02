@@ -3,7 +3,7 @@ from app.utils.validators import Validators
 from app.utils.db import db
 
 from app.repositories.user_repository import UserRepository, ReportRepository
-from app.repositories.library_repository import LibraryRepository, LocationRepository
+from app.repositories.library_repository import LibraryRepository, RacksRepository
 from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
 
@@ -224,14 +224,14 @@ class AdminService:
             return Responses.server_error()
 
     @staticmethod
-    def update_location(loc_id):
+    def update_racks(rack_id):
         try:
-            location = LocationRepository.get_location_by_id(loc_id)
-            if not location:
-                return Responses.not_found("Location")
+            rack = RacksRepository.get_rack_by_id(rack_id)
+            if not rack:
+                return Responses.not_found("Rack")
 
-            LocationRepository.update_location(loc_id)
-            serialized_location = Validators.serialize_model(location)
-            return Responses.success("Location updated successfully", serialized_location)
+            RacksRepository.update_rack(rack_id)
+            serialized_rack = Validators.serialize_model(rack)
+            return Responses.success("Location updated successfully", serialized_rack)
         except Exception as e:
             return Responses.server_error()
