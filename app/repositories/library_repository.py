@@ -65,6 +65,10 @@ class LibraryRepository:
     @staticmethod
     def get_library_by_email(lib_email):
         return Libraries.query.filter_by(lib_email=lib_email).first()
+    
+    @staticmethod
+    def library_exists(lib_id):
+        return Libraries.query.filter_by(lib_id=lib_id).first() is not None
 
 
 class LocationRepository:
