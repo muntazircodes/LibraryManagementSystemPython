@@ -42,7 +42,7 @@ class AdminService:
             if not libraries:
                 return Responses.not_found("Libraries")
             serialized_libraries = [Validators.serialize_model(lib) for lib in libraries]
-            return f"{serialized_libraries}\n {Responses.success("Libraries retrieved")}"
+            return f"{serialized_libraries}\n {Responses.success('Libraries retrieved')}"
         except Exception as e:
             return Responses.server_error()
 
@@ -134,7 +134,7 @@ class AdminService:
             if not admins:
                 return Responses.not_found("Admins")
             serialized_admins = [Validators.serialize_model(admin) for admin in admins]
-            return f"{Responses.success("Admins retrieved")}\n {serialized_admins}"
+            return f"{Responses.success('Admins retrieved')}\n {serialized_admins}"
         except Exception as e:
             return Responses.server_error()
 
@@ -143,7 +143,7 @@ class AdminService:
         try:
             defaulter_users = UserRepository.get_defaulter_user()
             serialized_defaulters = [Validators.serialize_model(user) for user in defaulter_users]
-            return f"{Responses.success("Defaulter users retrieved")}\n{serialized_defaulters})"
+            return f"{Responses.success('Defaulter users retrieved')}\n{serialized_defaulters})"
         except Exception as e:
             return Responses.server_error()
 
@@ -187,7 +187,7 @@ class AdminService:
             user.user_fine = fine
             db.session.commit()
             serialized_user = Validators.serialize_model(user)
-            return f"{Responses.success('User fine calculated')}\n{ {"fine": fine, "user": serialized_user}}"
+            return f"{Responses.success('User fine calculated')}\n{ {'fine': fine, 'user': serialized_user}}"
         except Exception as e:
             return Responses.server_error()
 
@@ -199,7 +199,7 @@ class AdminService:
                 return Responses.not_found("User")
 
             UserRepository.delete_user(user_id)
-            return Responses.success("User discarded successfully")
+            return Responses.success('User discarded successfully')
         except Exception as e:
             return Responses.server_error()
 
