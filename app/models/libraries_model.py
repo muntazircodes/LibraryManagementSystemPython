@@ -7,10 +7,10 @@ class Libraries(db.Model):
 
     lib_id = db.Column(Integer, primary_key=True, autoincrement=True)
     lib_name = db.Column(String(100), nullable=False)
-    lib_adress = db.Column(String(100), nullable=False)
+    lib_address = db.Column(String(100), nullable=False)
     lib_admin = db.Column(String(100), nullable=False)
     lib_email = db.Column(String(100), nullable=False, unique=True)
-    lib_licence = db.Column(String(100), nullable=False, unique=True)
+    lib_license = db.Column(String(100), nullable=False, unique=True)
     lib_docs = db.Column(String(100), nullable=False)
     library_verified = db.Column(Boolean, default=False, nullable=False)
 
