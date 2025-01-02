@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 import enum
 
 class UserTypeEnum(enum.Enum):
+
     Admin = 'Admin'
     SuperAdmin = 'Super Admin'
     User = 'User'
@@ -18,7 +19,8 @@ class User(db.Model):
     user_password = Column(String(100), nullable=False)
     
     user_type = Column(String(50), nullable=False, server_default=UserTypeEnum.User.value)
-    
+    is_admin = Column(Boolean, nullable=False, default=False)
+
     user_verified = Column(Boolean, nullable=False, default=False) 
     phone_number = Column(String(20), nullable=True)
     profile_picture = Column(String(255), nullable=True)
@@ -45,5 +47,4 @@ class Report(db.Model):
     handled = Column(Boolean, nullable=False, default=False) 
     report_date = Column(DateTime, server_default=func.now(), nullable=False)
 
-    # Relationships
     user = relationship('User', back_populates='reports')
