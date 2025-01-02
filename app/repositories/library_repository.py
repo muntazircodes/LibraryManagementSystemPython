@@ -5,13 +5,13 @@ from app.models.libraries_model import Libraries, Racks
 class LibraryRepository:
 
     @staticmethod
-    def add_library(lib_name, lib_adress, lib_admin, lib_licence, lib_docs, lib_email):
+    def add_library(lib_name, lib_address, lib_admin, lib_license, lib_docs, lib_email):
         try:
             new_library = Libraries(
                 lib_name=lib_name,
-                lib_adress=lib_adress,
+                lib_address=lib_address,
                 lib_admin=lib_admin,
-                lib_licence=lib_licence,
+                lib_license=lib_license,
                 lib_docs=lib_docs,
                 lib_email=lib_email,
                 library_verified=False
@@ -24,13 +24,13 @@ class LibraryRepository:
             raise e
 
     @staticmethod
-    def update_library(lib_id, lib_name, lib_adress, lib_admin):
+    def update_library(lib_id, lib_name, lib_address, lib_admin):
         try:
             library = Libraries.query.get(lib_id)
             if not library:
                 raise ValueError("Library not found")
             library.lib_name = lib_name
-            library.lib_adress = lib_adress
+            library.lib_address = lib_address
             library.lib_admin = lib_admin
             db.session.commit()
             return library
