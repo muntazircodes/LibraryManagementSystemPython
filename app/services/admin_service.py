@@ -7,7 +7,6 @@ from app.repositories.library_repository import LibraryRepository, LocationRepos
 from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
 
-
 class AdminService:
 
     @staticmethod
@@ -33,7 +32,6 @@ class AdminService:
                 lib_email=lib_data.get('lib_email')
             )
             return Validators.serialize_model(new_library)
-            
         except Exception as e:
             return Responses.server_error()
 
@@ -57,15 +55,6 @@ class AdminService:
             return Responses.server_error()
 
     @staticmethod
-    def get_all_admins():
-        try:
-            admins = UserRepository.get_library_admin()
-            serialized_admins = [Validators.serialize_model(admin) for admin in admins]
-            return Responses.success("Admins retrieved", serialized_admins)
-        except Exception as e:
-            return Responses.server_error()
-
-    @staticmethod
     def verify_library(lib_id):
         try:
             library = LibraryRepository.get_library_by_id(lib_id)
@@ -75,6 +64,21 @@ class AdminService:
             library.library_verified = True
             db.session.commit()
             return Validators.serialize_model(library)
+        except Exception as e:
+            return Responses.server_error()
+
+    @staticmethod
+    def check_if_email_exists(email):
+        try:
+            existing_user = UserRepository.get_user_by_email(email)
+            if existing_user:
+                return Responses.conflict("User with this email already exists")
+
+            existing_library = LibraryRepository.get_library_by_email(email)
+            if existing_library:
+                return Responses.conflict("Library with this email already exists")
+
+            return Responses.success("Email is unique")
         except Exception as e:
             return Responses.server_error()
 
@@ -133,6 +137,15 @@ class AdminService:
             return Responses.server_error()
 
     @staticmethod
+    def get_all_admins():
+        try:
+            admins = UserRepository.get_library_admin()
+            serialized_admins = [Validators.serialize_model(admin) for admin in admins]
+            return Responses.success("Admins retrieved", serialized_admins)
+        except Exception as e:
+            return Responses.server_error()
+
+    @staticmethod
     def get_defaulter_users():
         try:
             defaulter_users = UserRepository.get_defaulter_user()
@@ -151,7 +164,6 @@ class AdminService:
         except Exception as e:
             return Responses.server_error()
 
-        
     @staticmethod
     def check_user_borrowings(user_id):
         try:
@@ -160,7 +172,7 @@ class AdminService:
             return Responses.success("Borrowings retrieved", serialized_borrowings)
         except Exception as e:
             return Responses.server_error()
-            
+
     @staticmethod
     def check_copy_status(copy_id):
         try:
@@ -169,7 +181,7 @@ class AdminService:
             return Responses.success("Copy status retrieved", serialized_copy)
         except Exception as e:
             return Responses.server_error()
-            
+
     @staticmethod
     def calculate_and_manage_user_fine(user_id):
         try:
@@ -184,7 +196,7 @@ class AdminService:
             return Responses.success("User fine calculated and updated", {"fine": fine, "user": serialized_user})
         except Exception as e:
             return Responses.server_error()
-            
+
     @staticmethod
     def discard_user(user_id):
         try:
@@ -196,7 +208,7 @@ class AdminService:
             return Responses.success("User discarded successfully")
         except Exception as e:
             return Responses.server_error()
-            
+
     @staticmethod
     def check_and_update_reports(report_id, report_data):
         try:
@@ -210,7 +222,7 @@ class AdminService:
             return Responses.success("Report updated successfully", serialized_report)
         except Exception as e:
             return Responses.server_error()
-            
+
     @staticmethod
     def update_location(loc_id):
         try:
