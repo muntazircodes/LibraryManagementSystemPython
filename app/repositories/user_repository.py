@@ -1,6 +1,6 @@
 from app.utils.db import db
 from app.models.user_model import User, Report
-
+from app.repositories.library_repository import LibraryRepository
 
 
 class UserRepository:   
@@ -11,6 +11,12 @@ class UserRepository:
         user_fine=0.0, phone_number=None, profile_picture=None, 
         allowed_books=4, alloted_books=0
     ):
+        if UserRepository.get_user_by_email(user_email):
+            raise ValueError("User with this email already exists")
+
+        if not LibraryRepository.library_exists(lib_id):
+            raise ValueError("Library with this ID does not exist")
+
         new_user = User(
             user_name=user_name,
             user_email=user_email,
@@ -27,6 +33,7 @@ class UserRepository:
         db.session.add(new_user)
         db.session.commit()
         return new_user
+    
 
     @staticmethod
     def update_user(
