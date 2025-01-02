@@ -62,6 +62,11 @@ class UserRepository:
         db.session.commit()
 
     @staticmethod
+    def is_admin(user_id):
+        user = User.query.get(user_id)
+        return user.user_type == 'Admin'
+    
+    @staticmethod
     def verify_user(user_id):
         user = User.query.get(user_id)
         user.user_verified = True
