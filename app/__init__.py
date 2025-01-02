@@ -12,10 +12,10 @@ def create_app():
 
     with app.app_context():
         from app.models.book_model import Books, Copies, Borrowing, Reserve
-        from app.models.libraries_model import Libraries, Location
+        from app.models.libraries_model import Libraries, Racks
         from app.models.user_model import User, Report
 
     return app
 
 
-__all__ = ["Libraries", "Books", "Copies", "Borrowing", "Reserve", "Location", "User", "Report"]
+__all__ = ["Libraries", "Books", "Copies", "Borrowing", "Reserve", "Racks", "User", "Report"]
