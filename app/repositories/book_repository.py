@@ -31,7 +31,7 @@ class BookRepository:
                 db.session.flush()
 
                 copies = [
-                    Copies(book_id=new_book.book_id, loc_id=1) 
+                    Copies(book_id=new_book.book_id, rack_id=1) 
                     for _ in range(book_stock)
                 ]
                 db.session.add_all(copies)
@@ -132,7 +132,7 @@ class BookRepository:
 class CopiesRepository:
 
     @staticmethod
-    def add_copies(book_id, quantity, loc_id=1, condition="Excellent", status="Available"):
+    def add_copies(book_id, quantity, rack_id, condition="New", status="Available"):
         try:
             with db.session.begin():
                 book = Books.query.get(book_id)
@@ -142,7 +142,7 @@ class CopiesRepository:
                 copies = [
                     Copies(
                         book_id=book.book_id,
-                        loc_id=loc_id,
+                        rack_id=rack_id,
                         copy_condition=condition,
                         copy_status=status,
                         copy_available="Yes"
@@ -185,7 +185,7 @@ class CopiesRepository:
         try:
             with db.session.begin():
                 copy = Copies.query.get_or_404(copy_id)
-                allowed_fields = ['loc_id', 'copy_condition', 'copy_status', 'copy_available']
+                allowed_fields = ['rack_id', 'copy_condition', 'copy_status', 'copy_available']
                         
                 for key, value in kwargs.items():
                     if key in allowed_fields:
@@ -203,7 +203,7 @@ class CopiesRepository:
         try:
              with db.session.begin():
                 copies = Copies.query.filter_by(book_id=book_id).all()
-                allowed_fields = ['loc_id', 'copy_condition', 'copy_status', 'copy_available']
+                allowed_fields = ['rack_id', 'copy_condition', 'copy_status', 'copy_available']
                         
                 for copy in copies:
                     for key, value in kwargs.items():

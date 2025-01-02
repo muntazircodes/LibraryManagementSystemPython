@@ -1,15 +1,15 @@
 from app.utils.db import db
-from app.models.libraries_model import Libraries, Location
+from app.models.libraries_model import Libraries, Racks
 
 
 class LibraryRepository:
 
     @staticmethod
-    def add_library(lib_name, lib_location, lib_admin, lib_licence, lib_docs, lib_email):
+    def add_library(lib_name, lib_adress, lib_admin, lib_licence, lib_docs, lib_email):
         try:
             new_library = Libraries(
                 lib_name=lib_name,
-                lib_location=lib_location,
+                lib_adress=lib_adress,
                 lib_admin=lib_admin,
                 lib_licence=lib_licence,
                 lib_docs=lib_docs,
@@ -24,13 +24,13 @@ class LibraryRepository:
             raise e
 
     @staticmethod
-    def update_library(lib_id, lib_name, lib_location, lib_admin):
+    def update_library(lib_id, lib_name, lib_adress, lib_admin):
         try:
             library = Libraries.query.get(lib_id)
             if not library:
                 raise ValueError("Library not found")
             library.lib_name = lib_name
-            library.lib_location = lib_location
+            library.lib_adress = lib_adress
             library.lib_admin = lib_admin
             db.session.commit()
             return library
@@ -71,113 +71,113 @@ class LibraryRepository:
         return Libraries.query.filter_by(lib_id=lib_id).first() is not None
 
 
-class LocationRepository:
+class RacksRepository:
     @staticmethod
-    def get_location_by_id(loc_id):
-        return Location.query.get(loc_id)
+    def get_rack_by_id(rack_id):
+        return Racks.query.get(rack_id)
     
     @staticmethod
-    def get_locations_by_library(lib_id):
-        return Location.query.filter_by(lib_id=lib_id).all()
+    def get_racks_by_library(lib_id):
+        return Racks.query.filter_by(lib_id=lib_id).all()
     
     @staticmethod
-    def add_location(lib_id, block, floor, room, locker, rack):
+    def add_rack(lib_id, block, floor, room, locker, rack_no):
         try:
-            new_location = Location(
+            new_rack = Racks(
                 lib_id=lib_id,
                 block=block,
                 floor=floor,
                 room=room,
                 locker=locker,
-                rack=rack
+                rack_no=rack_no
             )
-            db.session.add(new_location)
+            db.session.add(new_rack)
             db.session.commit()
-            return new_location
+            return new_rack
         except Exception as e:
             db.session.rollback()
             raise e
 
     @staticmethod
-    def update_location(loc_id, block, floor, room, locker, rack):
+    def update_rack(rack_id, block, floor, room, locker, rack_no):
         try:
-            location = Location.query.get(loc_id)
-            if not location:
-                raise ValueError("Location not found")
-            location.block = block
-            location.floor = floor
-            location.room = room
-            location.locker = locker
-            location.rack = rack
+            rack = Racks.query.get(rack_id)
+            if not rack:
+                raise ValueError("Racks not found")
+            rack.block = block
+            rack.floor = floor
+            rack.room = room
+            rack.locker = locker
+            rack.rack_no = rack_no
             db.session.commit()
-            return location
+            return rack
         except Exception as e:
             db.session.rollback()
             raise e
 
     @staticmethod
-    def delete_location(loc_id):
+    def delete_rack(rack_id):
         try:
-            location = Location.query.get(loc_id)
-            if not location:
-                raise ValueError("Location not found")
-            db.session.delete(location)
+            rack = Racks.query.get(rack_id)
+            if not rack:
+                raise ValueError("Racks not found")
+            db.session.delete(rack)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
             raise e
 
-class LocationRepository:
+class RacksRepository:
     @staticmethod
-    def get_location_by_id(loc_id):
-        return Location.query.get(loc_id)
+    def get_rack_by_id(rack_id):
+        return Racks.query.get(rack_id)
     
     @staticmethod
-    def get_locations_by_library(lib_id):
-        return Location.query.filter_by(lib_id=lib_id).all()
+    def get_racks_by_library(lib_id):
+        return Racks.query.filter_by(lib_id=lib_id).all()
     
     @staticmethod
-    def add_location(lib_id, block, floor, room, locker, rack):
+    def add_rack(lib_id, block, floor, room, locker, rack_no):
         try:
-            new_location = Location(
+            new_rack = Racks(
                 lib_id=lib_id,
                 block=block,
                 floor=floor,
                 room=room,
                 locker=locker,
-                rack=rack
+                rack_no=rack_no
             )
-            db.session.add(new_location)
+            db.session.add(new_rack)
             db.session.commit()
-            return new_location
+            return new_rack
         except Exception as e:
             db.session.rollback()
             raise e
 
     @staticmethod
-    def update_location(loc_id, block, floor, room, locker, rack):
+    def update_rack(rack_id, block, floor, room, locker, rack_no):
         try:
-            location = Location.query.get(loc_id)
-            if not location:
-                raise ValueError("Location not found")
-            location.block = block
-            location.floor = floor
-            location.room = room
-            location.locker = locker
-            location.rack = rack
+            rack = Racks.query.get(rack_id)
+            if not rack:
+                raise ValueError("Racks not found")
+            rack.block = block
+            rack.floor = floor
+            rack.room = room
+            rack.locker = locker
+            rack.rack_no = rack_no
             db.session.commit()
-            return location
+            return rack
         except Exception as e:
             db.session.rollback()
             raise e
 
     @staticmethod
-    def delete_location(loc_id):
+    def delete_rack(rack_id):
         try:
-            location = Location.query.get(loc_id)
-            if not location:
-                raise ValueError("Location not found")
-            db.session.delete(location)
+            rack = Racks.query.get(rack_id)
+            if not rack:
+                raise ValueError("Racks not found")
+            db.session.delete(rack)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
