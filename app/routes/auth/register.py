@@ -19,42 +19,44 @@ def register_library():
             "lib_name": Validators.validate_name,
             "lib_email": Validators.validate_email
         }
-
         for field, validator in validations.items():
             if not validator(data.get(field)):
                 return Responses.validation_error({field: f"Invalid {field.replace('_', ' ')}"})
 
         result = AdminService.register_library(data)
-        if "error" in result:
-            return Responses.error(result["error"], status_code=400)
+
+        if not result or "error" in result:
+            return Responses.error(result.get("error", "Failed to create library"))
 
         return Responses.created("Library", data=result)
 
     except Exception as e:
         return Responses.server_error()
-    
+
+
 @register_bp.route('/user/register', methods=['POST'])
 def register_user():
     try:
         data = request.get_json()
 
-        required_fields = ["user_name", "user_email", "user_password", "user_type", "lib_id"]
+        required_fields = ["user_name", "user_email", "user_password", "phone_number", "valid_docs", "lib_id"]
         missing_fields = [field for field in required_fields if field not in data or not data[field]]
         if missing_fields:
             return Responses.missing_fields(missing_fields)
 
         validations = {
             "user_name": Validators.validate_name,
-            "user_email": Validators.validate_email
+            "user_email": Validators.validate_email,
+            "phone_number": Validators.validate_phone
         }
-
         for field, validator in validations.items():
             if not validator(data.get(field)):
                 return Responses.validation_error({field: f"Invalid {field.replace('_', ' ')}"})
 
         result = AdminService.register_user(data)
-        if "error" in result:
-            return Responses.error(result["error"], status_code=400)
+
+        if not result or "error" in result:
+            return Responses.error(result.get("error", "Failed to create user"))
 
         return Responses.created("User", data=result)
 
