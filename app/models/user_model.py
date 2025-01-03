@@ -23,6 +23,7 @@ class User(db.Model):
 
     user_verified = Column(Boolean, nullable=False, default=False) 
     phone_number = Column(String(20), nullable=True)
+    valid_docs = Column(String(255), nullable=True)
     profile_picture = Column(String(255), nullable=True)
     lib_id = Column(Integer, ForeignKey('libraries.lib_id'), nullable=False)
     
