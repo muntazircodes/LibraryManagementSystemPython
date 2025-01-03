@@ -108,8 +108,6 @@ class Validators:
             return False
         if not re.search(r'[0-9]', password):
             return False
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            return False
         return True
 
     @staticmethod
