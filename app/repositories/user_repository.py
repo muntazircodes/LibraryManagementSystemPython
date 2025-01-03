@@ -6,10 +6,9 @@ from app.repositories.library_repository import LibraryRepository
 class UserRepository:   
 
     @staticmethod
-    def add_user(
-        user_name, user_email, user_password, user_type, lib_id, 
-        user_fine=0.0, phone_number=None, profile_picture=None, 
-        allowed_books=4, alloted_books=0
+    def add_user (
+        user_name, user_email, user_password, lib_id, 
+        phone_number, valid_docs
     ):
         if User.query.filter_by(user_email=user_email).first():
             raise ValueError("User with this email already exists")
@@ -21,14 +20,9 @@ class UserRepository:
             user_name=user_name,
             user_email=user_email,
             user_password=user_password, 
-            user_type=user_type,
-            user_verified=False,
             lib_id=lib_id,
-            user_fine=user_fine,
             phone_number=phone_number,
-            profile_picture=profile_picture,
-            allowed_books=allowed_books,
-            alloted_books=alloted_books
+            valid_docs=valid_docs,
         )
         db.session.add(new_user)
         db.session.commit()
@@ -43,7 +37,7 @@ class UserRepository:
 
         allowed_fields = [
             'user_name', 'user_email', 'user_password', 'user_type', 
-            'user_verified', 'lib_id', 'user_fine', 'phone_number', 
+            'user_verified', 'user_fine', 'phone_number', 
             'profile_picture', 'allowed_books', 'alloted_books'
         ]
         try:

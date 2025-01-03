@@ -16,13 +16,14 @@ class User(db.Model):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     user_name = Column(String(100), nullable=False)
     user_email = Column(String(255), nullable=False, unique=True)
-    user_password = Column(String(100), nullable=False)
+    user_password = Column(String(255), nullable=False)
     
     user_type = Column(String(50), nullable=False, server_default=UserTypeEnum.User.value)
     is_admin = Column(Boolean, nullable=False, default=False)
 
     user_verified = Column(Boolean, nullable=False, default=False) 
     phone_number = Column(String(20), nullable=True)
+    valid_docs = Column(String(255), nullable=True)
     profile_picture = Column(String(255), nullable=True)
     lib_id = Column(Integer, ForeignKey('libraries.lib_id'), nullable=False)
     
