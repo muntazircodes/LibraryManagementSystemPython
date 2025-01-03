@@ -90,16 +90,15 @@ class Validators:
 
     @staticmethod
     def hash_password(password: str) -> str:
+        return generate_password_hash(password)
+
+    @staticmethod
+    def hash_password(password: str) -> str:
         hashed = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
         if len(hashed) > 255:
             raise ValueError("Generated hash is too long")
         return hashed
-
-
-    @staticmethod
-    def verify_password(password: str, hashed_password: str) -> bool:
-        return check_password_hash(hashed_password, password)
-
+    
     @staticmethod
     def validate_password(password: Any) -> bool:
         if not isinstance(password, str):
