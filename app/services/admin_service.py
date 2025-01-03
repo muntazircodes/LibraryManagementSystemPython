@@ -20,7 +20,14 @@ class AdminService:
             )
         except Exception:
             return Responses.server_error()
-
+        
+    @staticmethod
+    def validate_and_serialize(data, validators):
+        for field, validator in validators.items():
+            if not validator(data.get(field)):
+                return field
+        return None
+    
     @staticmethod
     def register_library(lib_data):
         try:
