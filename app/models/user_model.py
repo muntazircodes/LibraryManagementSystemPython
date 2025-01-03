@@ -16,7 +16,7 @@ class User(db.Model):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     user_name = Column(String(100), nullable=False)
     user_email = Column(String(255), nullable=False, unique=True)
-    user_password = Column(String(100), nullable=False)
+    user_password = Column(String(255), nullable=False)
     
     user_type = Column(String(50), nullable=False, server_default=UserTypeEnum.User.value)
     is_admin = Column(Boolean, nullable=False, default=False)
