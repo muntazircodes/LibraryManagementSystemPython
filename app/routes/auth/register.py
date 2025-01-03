@@ -61,7 +61,6 @@ def register_user():
         if missing_fields:
             return Responses.missing_fields(missing_fields)
 
-        # Validate library existence first
         library = LibraryRepository.get_library_by_id(data.get('lib_id'))
         if not library:
             return Responses.not_found("Library with provided ID does not exist")
@@ -94,7 +93,7 @@ def register_user():
         if not created_user:
             return Responses.error("User creation failed - database verification failed")
 
-        if 'user_password' in created_user:
+        if isinstance(created_user, dict) and 'user_password' in created_user:
             del created_user['user_password']
 
         return Responses.created("User", data=created_user)
