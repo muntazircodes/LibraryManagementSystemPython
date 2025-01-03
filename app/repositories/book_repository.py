@@ -361,7 +361,6 @@ class ReserveRepository:
             with db.session.begin():
                 reservation = Reserve.query.get_or_404(reserve_id)
                 
-                # Only update allowed fields
                 allowed_fields = ['receiving_time', 'is_expired']
                 for field, value in kwargs.items():
                     if field in allowed_fields:

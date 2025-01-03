@@ -11,7 +11,7 @@ class UserRepository:
         user_fine=0.0, phone_number=None, profile_picture=None, 
         allowed_books=4, alloted_books=0
     ):
-        if UserRepository.get_user_by_email(user_email):
+        if User.query.filter_by(user_email=user_email).first():
             raise ValueError("User with this email already exists")
 
         if not LibraryRepository.library_exists(lib_id):
@@ -36,24 +36,25 @@ class UserRepository:
     
 
     @staticmethod
-    def update_user(
-        user_id, user_name, user_email, user_password, user_type, 
-        user_fine, phone_number=None, profile_picture=None, 
-        allowed_books=None, alloted_books=None
-    ):
+    def update_user(user_id, **kwargs):
         user = User.query.get(user_id)
-        user.user_name = user_name
-        user.user_email = user_email
-        user.user_password = user_password
-        user.user_type = user_type
-        user.user_fine = user_fine
-        user.phone_number = phone_number
-        user.profile_picture = profile_picture
-        if allowed_books is not None:
-            user.allowed_books = allowed_books
-        if alloted_books is not None:
-            user.alloted_books = alloted_books
-        db.session.commit()
+        if not user:
+            raise ValueError("User not found")
+
+        allowed_fields = [
+            'user_name', 'user_email', 'user_password', 'user_type', 
+            'user_verified', 'lib_id', 'user_fine', 'phone_number', 
+            'profile_picture', 'allowed_books', 'alloted_books'
+        ]
+        try:
+            for key, value in kwargs.items():
+                if key in allowed_fields and hasattr(user, key):
+                    setattr(user, key, value)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        return user
 
     @staticmethod
     def delete_user(user_id):
@@ -174,4 +175,21 @@ class ReportRepository:
         )
         db.session.add(new_report)
         db.session.commit()
-        return new_report        
+        return new_report    
+
+    @staticmethod
+    def update_report(report_id, **kwargs):
+        report = Report.query.get(report_id)
+        if not report:
+            raise ValueError("Report not found")
+
+        allowed_fields = ['subject', 'message', 'handled_by', 'handled']
+        try:
+            for key, value in kwargs.items():
+                if key in allowed_fields and hasattr(report, key):
+                    setattr(report, key, value)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        return report    
