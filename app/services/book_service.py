@@ -27,7 +27,7 @@ class BookService:
             if not Validators.validate_number(book_data.get('book_price')):
                 return Responses.validation_error({"price": "Invalid price"})
 
-            if not Validators.validate_number(book_data.get('book_category')):
+            if not Validators.validate_name(book_data.get('book_category')):
                 return Responses.validation_error({"category": "Invalid category"})
 
             new_book = BookRepository.add_book(
