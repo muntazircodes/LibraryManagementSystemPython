@@ -15,11 +15,14 @@ def register_library():
         if missing_fields:
             return Responses.missing_fields(missing_fields)
 
-        if not Validators.validate_name(data.get('lib_name')):
-            return Responses.validation_error({"name": "Invalid library name"})
+        validations = {
+            "lib_name": Validators.validate_name,
+            "lib_email": Validators.validate_email
+        }
 
-        if not Validators.validate_email(data.get('lib_email')):
-            return Responses.validation_error({"email": "Invalid email format"})
+        for field, validator in validations.items():
+            if not validator(data.get(field)):
+                return Responses.validation_error({field: f"Invalid {field.replace('_', ' ')}"})
 
         result = AdminService.register_library(data)
         if "error" in result:
@@ -29,7 +32,7 @@ def register_library():
 
     except Exception as e:
         return Responses.server_error()
-
+    
 @register_bp.route('/user/register', methods=['POST'])
 def register_user():
     try:
@@ -40,11 +43,14 @@ def register_user():
         if missing_fields:
             return Responses.missing_fields(missing_fields)
 
-        if not Validators.validate_name(data.get('user_name')):
-            return Responses.validation_error({"name": "Invalid user name"})
+        validations = {
+            "user_name": Validators.validate_name,
+            "user_email": Validators.validate_email
+        }
 
-        if not Validators.validate_email(data.get('user_email')):
-            return Responses.validation_error({"email": "Invalid email format"})
+        for field, validator in validations.items():
+            if not validator(data.get(field)):
+                return Responses.validation_error({field: f"Invalid {field.replace('_', ' ')}"})
 
         result = AdminService.register_user(data)
         if "error" in result:
