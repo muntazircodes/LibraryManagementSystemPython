@@ -68,24 +68,30 @@ class AdminService:
 
     @staticmethod
     def register_user(user_data):
-        validators = {
-            'user_email': Validators.validate_email,
-            'user_name': Validators.validate_name,
-            'user_password': Validators.validate_password
-        }
+        try:
+            allowed_fields = ['user_name', 'user_email', 'user_password', 'phone_number', 'valid_docs', 'lib_id']
+            validators = {
+                'user_email': Validators.validate_email,
+                'user_name': Validators.validate_name,
+                'user_password': Validators.validate_password,
+                'phone_number': Validators.validate_phone
+            }
 
-        validation_error = AdminService.validate_and_serialize(user_data, validators)
-        if validation_error:
-            return validation_error
+            validation_error = AdminService.validate_and_serialize(user_data, validators)
+            if validation_error:
+                return validation_error
 
-        existing_user = UserRepository.get_user_by_email(user_data.get('user_email'))
-        if existing_user:
-            return Responses.conflict("User with this email already exists")
+            existing_user = UserRepository.get_user_by_email(user_data.get('user_email'))
+            if existing_user:
+                return Responses.conflict("User with this email already exists")
 
-        hashed_password = Validators.hash_password(user_data.get('user_password'))
-        user_data['user_password'] = hashed_password
+            hashed_password = Validators.hash_password(user_data.get('user_password'))
+            user_data['user_password'] = hashed_password
 
-        return AdminService.handle_repository_action(UserRepository.add_user, **user_data)
+            new_user_data = {field: user_data.get(field) for field in allowed_fields}
+            return AdminService.handle_repository_action(UserRepository.add_user, **new_user_data)
+        except Exception as e:
+            return Responses.server_error()
 
     @staticmethod
     def verify_user(user_id):
@@ -93,7 +99,7 @@ class AdminService:
 
     @staticmethod
     def promote_user(user_id):
-        return AdminService.handle_repository_action(UserRepository.promote_user, user_id)
+        return AdminService.handle_repository_action(UserRepository.promote_as_admin, user_id)
 
     @staticmethod
     def get_all_admins():
@@ -125,8 +131,10 @@ class AdminService:
             fine = UserRepository.calculate_fine(user_id)
             user.user_fine = fine
             db.session.commit()
-            serialized_user = Validators.serialize_model(user)
-            return f"{Responses.success('User fine calculated')}\n{{'fine': fine, 'user': serialized_user}}"
+
+            response_data = Validators.serialize_model(user)
+            response_data['fine'] = fine
+            return Responses.success(response_data) if fine else Responses.success("No fine for this user")
         except Exception as e:
             return Responses.server_error()
 
