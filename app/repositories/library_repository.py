@@ -24,16 +24,22 @@ class LibraryRepository:
             raise e
 
     @staticmethod
-    def update_library(lib_id, lib_name, lib_address, lib_admin):
+    def update_library(lib_id, **kwargs):
         try:
-            library = Libraries.query.get(lib_id)
-            if not library:
-                raise ValueError("Library not found")
-            library.lib_name = lib_name
-            library.lib_address = lib_address
-            library.lib_admin = lib_admin
-            db.session.commit()
-            return library
+            with db.session.begin():
+                library = Libraries.query.get_or_404(lib_id)
+                
+                allowed_fields = [
+                    'lib_name', 'lib_address', 'lib_admin', 'lib_license', 
+                    'lib_docs', 'lib_email', 'library_verified'
+                ]
+                
+                for key, value in kwargs.items():
+                    if key in allowed_fields and hasattr(library, key):
+                        setattr(library, key, value)
+                
+                db.session.commit()
+                return library
         except Exception as e:
             db.session.rollback()
             raise e
@@ -100,21 +106,25 @@ class RacksRepository:
             raise e
 
     @staticmethod
-    def update_rack(rack_id, block, floor, room, locker, rack_no):
+    def update_rack(rack_id, **kwargs):
         try:
-            rack = Racks.query.get(rack_id)
-            if not rack:
-                raise ValueError("Racks not found")
-            rack.block = block
-            rack.floor = floor
-            rack.room = room
-            rack.locker = locker
-            rack.rack_no = rack_no
-            db.session.commit()
-            return rack
+            with db.session.begin():
+                rack = Racks.query.get_or_404(rack_id)
+                
+                allowed_fields = [
+                    'block', 'floor', 'room', 'locker', 'rack_no'
+                ]
+                
+                for key, value in kwargs.items():
+                    if key in allowed_fields and hasattr(rack, key):
+                        setattr(rack, key, value)
+                
+                db.session.commit()
+                return rack
         except Exception as e:
             db.session.rollback()
             raise e
+    
 
     @staticmethod
     def delete_rack(rack_id):
