@@ -7,6 +7,7 @@ from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
 
 class AdminService:
+
     @staticmethod
     def handle_repository_action(action, *args, **kwargs):
         try:
@@ -20,14 +21,16 @@ class AdminService:
             )
         except Exception:
             return Responses.server_error()
-        
+
+
     @staticmethod
     def validate_and_serialize(data, validators):
         for field, validator in validators.items():
             if not validator(data.get(field)):
                 return field
         return None
-    
+
+
     @staticmethod
     def register_library(lib_data):
         try:
@@ -43,6 +46,7 @@ class AdminService:
             return AdminService.handle_repository_action(LibraryRepository.add_library, **new_library_data)
         except Exception:
             return Responses.server_error()
+
 
     @staticmethod
     def register_user(user_data):
@@ -63,13 +67,16 @@ class AdminService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def get_all_libraries():
         return AdminService.handle_repository_action(LibraryRepository.get_all_libraries)
 
+
     @staticmethod
     def get_library(lib_id):
         return AdminService.handle_repository_action(LibraryRepository.get_library_by_id, lib_id)
+
 
     @staticmethod
     def verify_library(lib_id):
@@ -83,33 +90,41 @@ class AdminService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def verify_user(user_id):
         return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
+
 
     @staticmethod
     def promote_user(user_id):
         return AdminService.handle_repository_action(UserRepository.promote_as_admin, user_id)
 
+
     @staticmethod
     def get_all_admins():
         return AdminService.handle_repository_action(UserRepository.get_library_admin)
+
 
     @staticmethod
     def get_defaulter_users():
         return AdminService.handle_repository_action(UserRepository.get_defaulter_user)
 
+
     @staticmethod
     def track_user_fine(user_id):
         return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
+
 
     @staticmethod
     def check_user_borrowings(user_id):
         return AdminService.handle_repository_action(BorrowRepository.get_borrowings_by_user_id, user_id)
 
+
     @staticmethod
     def check_copy_status(copy_id):
         return AdminService.handle_repository_action(CopiesRepository.get_copies_by_book_id, copy_id)
+
 
     @staticmethod
     def calculate_and_manage_user_fine(user_id):
@@ -126,9 +141,11 @@ class AdminService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def discard_user(user_id):
         return AdminService.handle_repository_action(UserRepository.delete_user, user_id)
+
 
     @staticmethod
     def check_and_update_reports(report_id, report_data):
@@ -141,6 +158,7 @@ class AdminService:
             return Validators.serialize_model(report)
         except Exception:
             return Responses.server_error()
+
 
     @staticmethod
     def update_racks(rack_id):
