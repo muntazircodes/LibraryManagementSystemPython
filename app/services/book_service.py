@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 
 class BookService:
+
     @staticmethod
     def handle_repository_action(action, *args, **kwargs):
         try:
@@ -20,6 +21,7 @@ class BookService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def add_book(book_data):
         try:
@@ -31,6 +33,7 @@ class BookService:
             return BookService.handle_repository_action(BookRepository.add_new_book, **new_book_data)
         except Exception:
             return Responses.server_error()
+
 
     @staticmethod
     def update_book(book_id, book_data):
@@ -48,17 +51,21 @@ class BookService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def delete_book(book_id):
         return BookService.handle_repository_action(BookRepository.delete_book, book_id)
+
 
     @staticmethod
     def search_for_books(book_title):
         return BookService.handle_repository_action(BookRepository.get_book_by_name, book_title)
 
+
     @staticmethod
     def search_for_books_stock(book_title):
         return BookService.handle_repository_action(BookRepository.get_book_by_name, book_title)
+
 
     @staticmethod
     def check_available_copies(book_id):
@@ -74,6 +81,7 @@ class BookService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def add_copies(book_id, copies_data):
         try:
@@ -83,6 +91,7 @@ class BookService:
             return BookService.handle_repository_action(CopiesRepository.add_copies, book_id, copies_data.get('copies'))
         except Exception:
             return Responses.server_error()
+
 
     @staticmethod
     def borrow_book(user_id, book_id):
@@ -111,6 +120,7 @@ class BookService:
         except Exception:
             return Responses.server_error()
 
+
     @staticmethod
     def return_book(user_id, book_id):
         try:
@@ -130,6 +140,7 @@ class BookService:
             return BookService.handle_repository_action(BorrowRepository.delete_borrowing, borrowing.borrow_id)
         except Exception:
             return Responses.server_error()
+
 
     @staticmethod
     def reserve_a_book(user_id, book_id):

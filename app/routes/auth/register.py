@@ -12,17 +12,30 @@ def register_library():
     try:
         data = request.get_json()
 
-        required_fields = ['lib_name', 'lib_email', 'lib_address', 
-                         'lib_admin', 'lib_license', 'lib_docs']
-        missing_fields = [field for field in required_fields if field not in data or not data[field]]
+        required_fields = [
+            'lib_name', 
+            'lib_email', 
+            'lib_address',
+            'lib_admin', 
+            'lib_license', 
+            'lib_docs'
+        ]
+
+        # Check for missing fields
+        missing_fields = [
+            field for field in required_fields 
+            if field not in data or not data[field]
+        ]
         if missing_fields:
             return Responses.missing_fields(missing_fields)
         
-        validators ={
+        # Define validators
+        validators = {
             'lib_name': Validators.validate_name,
             'lib_email': Validators.validate_email,
             'lib_admin': Validators.validate_name,
         }
+
         validation_error = AdminService.validate_and_serialize(data, validators)
         if validation_error:
             return Responses.validation_error(validation_error)
@@ -36,7 +49,6 @@ def register_library():
             return Responses.conflict("Library with this name already exists")
 
         result = AdminService.register_library(data)
-        
         if not result:
             return Responses.error("Failed to create library")
         
@@ -48,16 +60,27 @@ def register_library():
 
     except Exception as e:
         return Responses.server_error()
-
+    
 
 @register_bp.route('/user/register', methods=['POST'])
 def register_user():
     try:
         data = request.get_json()
 
-        required_fields = ['user_name', 'user_email', 'user_password', 
-                         'phone_number', 'valid_docs', 'lib_id']
-        missing_fields = [field for field in required_fields if field not in data or not data[field]]
+        # Define required fields
+        required_fields = [
+            'user_name',
+            'user_email',
+            'user_password',
+            'phone_number',
+            'valid_docs',
+            'lib_id'
+        ]
+
+        missing_fields = [
+            field for field in required_fields 
+            if field not in data or not data[field]
+        ]
         if missing_fields:
             return Responses.missing_fields(missing_fields)
 
@@ -73,7 +96,6 @@ def register_user():
         }
 
         validation_error = AdminService.validate_and_serialize(data, validators)
-        
         if validation_error:
             return Responses.validation_error(validation_error)
 
@@ -84,7 +106,10 @@ def register_user():
         data['user_password'] = Validators.hash_password(data.get('user_password'))
 
         new_user_data = {field: data.get(field) for field in required_fields}
-        result = AdminService.handle_repository_action(UserRepository.add_user, **new_user_data)
+        result = AdminService.handle_repository_action(
+            UserRepository.add_user, 
+            **new_user_data
+        )
 
         if not result:
             return Responses.error("Failed to create user")
