@@ -76,6 +76,11 @@ class AdminService:
     @staticmethod
     def get_library(lib_id):
         return AdminService.handle_repository_action(LibraryRepository.get_library_by_id, lib_id)
+    
+
+    @staticmethod
+    def get_unverified_libraries():
+        return AdminService.handle_repository_action(LibraryRepository.get_unverified_libraries)
 
 
     @staticmethod
@@ -89,8 +94,11 @@ class AdminService:
             return Validators.serialize_model(library)
         except Exception:
             return Responses.server_error()
+        
 
-
+    @staticmethod
+    def get_unverified_users():
+        return AdminService.handle_repository_action(UserRepository.get_unverified_users)
     @staticmethod
     def verify_user(user_id):
         return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
