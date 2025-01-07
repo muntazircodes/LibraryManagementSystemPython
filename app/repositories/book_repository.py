@@ -41,6 +41,37 @@ class BookRepository:
             db.session.rollback()
             raise e
 
+    @staticmethod 
+    def get_all_books():
+        return Books.query.all()
+
+    @staticmethod
+    def get_book_by_id(book_id):
+        return Books.query.get_or_404(book_id) 
+
+    @staticmethod
+    def get_book_by_name(book_name):
+        return Books.query.filter(Books.book_name.ilike(f"%{book_name}%")).all()
+
+    @staticmethod 
+    def get_book_by_isbn(isbn):
+        return Books.query.filter_by(isbn=isbn).first()
+
+    @staticmethod
+    def get_book_by_author(author):
+        return Books.query.filter(Books.author.ilike(f"%{author}%")).all()
+
+    @staticmethod
+    def get_book_by_publisher(publisher):
+        return Books.query.filter(Books.publisher.ilike(f"%{publisher}%")).all()
+
+    @staticmethod
+    def get_book_by_edition(edition):
+        return Books.query.filter_by(edition=edition).all()
+
+    @staticmethod
+    def get_book_by_genre(genre):
+        return Books.query.filter(Books.book_genre.ilike(f"%{genre}%")).all()
 
     @staticmethod
     def update_book(book_id, **kwargs):
@@ -74,7 +105,6 @@ class BookRepository:
             db.session.rollback()
             raise e
 
-
     @staticmethod
     def delete_book(book_id):
         try:
@@ -87,46 +117,6 @@ class BookRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-
-
-    @staticmethod 
-    def get_all_books():
-        return Books.query.all()
-
-
-    @staticmethod
-    def get_book_by_id(book_id):
-        return Books.query.get_or_404(book_id) 
-
-
-    @staticmethod
-    def get_book_by_name(book_name):
-        return Books.query.filter(Books.book_name.ilike(f"%{book_name}%")).all()
-
-
-    @staticmethod 
-    def get_book_by_isbn(isbn):
-        return Books.query.filter_by(isbn=isbn).first()
-
-
-    @staticmethod
-    def get_book_by_author(author):
-        return Books.query.filter(Books.author.ilike(f"%{author}%")).all()
-
-
-    @staticmethod
-    def get_book_by_publisher(publisher):
-        return Books.query.filter(Books.publisher.ilike(f"%{publisher}%")).all()
-
-
-    @staticmethod
-    def get_book_by_edition(edition):
-        return Books.query.filter_by(edition=edition).all()
-
-
-    @staticmethod
-    def get_book_by_genre(genre):
-        return Books.query.filter(Books.book_genre.ilike(f"%{genre}%")).all()
 
 
 class CopiesRepository:
@@ -159,26 +149,18 @@ class CopiesRepository:
             db.session.rollback()
             raise e
 
+    @staticmethod
+    def get_all_copies():
+        return Copies.query.all()
 
     @staticmethod
-    def delete_copy(copy_id):
-        try:
-            with db.session.begin():
-                copy = Copies.query.get(copy_id)
-                if not copy:
-                    raise ValueError("Copy not found")
+    def get_copies_by_book_id(book_id):
+        return Copies.query.filter_by(book_id=book_id).all()
 
-                book = Books.query.get(copy.book_id)
-                db.session.delete(copy)
-                        
-                book.available_stock = max(0, book.available_stock - 1)
-                        
-                db.session.commit()
-                return {"message": f"Copy deleted, updated quantity for {book.book_name}: {book.book_stock}"}
-        except Exception as e:
-            db.session.rollback()
-            raise e
-
+    @staticmethod
+    def get_copies_by_book_name(book_name):
+        return Copies.query.join(Books, Copies.book_id == Books.book_id)\
+            .filter(Books.book_name.ilike(f"%{book_name}%")).all()
 
     @staticmethod
     def update_copy(copy_id, **kwargs):
@@ -196,7 +178,6 @@ class CopiesRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-
 
     @staticmethod
     def update_all_copies(book_id, **kwargs):
@@ -216,21 +197,24 @@ class CopiesRepository:
             db.session.rollback()
             raise e
 
-
     @staticmethod
-    def get_all_copies():
-        return Copies.query.all()
+    def delete_copy(copy_id):
+        try:
+            with db.session.begin():
+                copy = Copies.query.get(copy_id)
+                if not copy:
+                    raise ValueError("Copy not found")
 
-
-    @staticmethod
-    def get_copies_by_book_id(book_id):
-        return Copies.query.filter_by(book_id=book_id).all()
-
-
-    @staticmethod
-    def get_copies_by_book_name(book_name):
-        return Copies.query.join(Books, Copies.book_id == Books.book_id)\
-            .filter(Books.book_name.ilike(f"%{book_name}%")).all()
+                book = Books.query.get(copy.book_id)
+                db.session.delete(copy)
+                        
+                book.available_stock = max(0, book.available_stock - 1)
+                        
+                db.session.commit()
+                return {"message": f"Copy deleted, updated quantity for {book.book_name}: {book.book_stock}"}
+        except Exception as e:
+            db.session.rollback()
+            raise e
 
 
 class BorrowRepository:
@@ -262,6 +246,30 @@ class BorrowRepository:
             db.session.rollback()
             raise e
 
+    @staticmethod
+    def get_all_borrowings():
+        return Borrowing.query.all()
+
+    @staticmethod
+    def get_borrowing_by_id(borrow_id):
+        return Borrowing.query.get_or_404(borrow_id)
+
+    @staticmethod
+    def get_borrowings_by_user_id(user_id):
+        return Borrowing.query.filter_by(user_id=user_id).all()
+
+    @staticmethod
+    def get_borrowings_by_copy_id(copy_id):
+        return Borrowing.query.filter_by(copy_id=copy_id).all()
+
+    @staticmethod
+    def get_borrowings_by_return_date(return_date):
+        return Borrowing.query.filter_by(return_date=return_date).all()
+
+    @staticmethod
+    def get_borrowings_by_user_name(user_name):
+        return Borrowing.query.join(User, Borrowing.user_id == User.user_id)\
+            .filter(User.user_name == user_name).all()
 
     @staticmethod
     def delete_borrowing(borrow_id, user_id):
@@ -288,37 +296,6 @@ class BorrowRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-
-
-    @staticmethod
-    def get_all_borrowings():
-        return Borrowing.query.all()
-
-
-    @staticmethod
-    def get_borrowing_by_id(borrow_id):
-        return Borrowing.query.get_or_404(borrow_id)
-
-
-    @staticmethod
-    def get_borrowings_by_user_id(user_id):
-        return Borrowing.query.filter_by(user_id=user_id).all()
-
-
-    @staticmethod
-    def get_borrowings_by_copy_id(copy_id):
-        return Borrowing.query.filter_by(copy_id=copy_id).all()
-
-
-    @staticmethod
-    def get_borrowings_by_return_date(return_date):
-        return Borrowing.query.filter_by(return_date=return_date).all()
-
-
-    @staticmethod
-    def get_borrowings_by_user_name(user_name):
-        return Borrowing.query.join(User, Borrowing.user_id == User.user_id)\
-            .filter(User.user_name == user_name).all()
 
 
 class ReserveRepository:
@@ -354,6 +331,21 @@ class ReserveRepository:
             db.session.rollback()
             raise e
 
+    @staticmethod
+    def get_all_reservations():
+        return Reserve.query.all()
+
+    @staticmethod
+    def get_reservation_by_id(reserve_id):
+        return Reserve.query.get_or_404(reserve_id)
+
+    @staticmethod
+    def get_reservations_by_user_id(user_id):
+        return Reserve.query.filter_by(user_id=user_id).all()
+
+    @staticmethod
+    def get_reservations_by_book_id(book_id):
+        return Reserve.query.filter_by(book_id=book_id).all()
 
     @staticmethod
     def update_reservation(reserve_id, **kwargs):
@@ -372,7 +364,6 @@ class ReserveRepository:
             db.session.rollback()
             raise e
 
-
     @staticmethod
     def delete_reservation(reserve_id):
         try:
@@ -384,23 +375,3 @@ class ReserveRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-
-
-    @staticmethod
-    def get_all_reservations():
-        return Reserve.query.all()
-
-
-    @staticmethod
-    def get_reservation_by_id(reserve_id):
-        return Reserve.query.get_or_404(reserve_id)
-
-
-    @staticmethod
-    def get_reservations_by_user_id(user_id):
-        return Reserve.query.filter_by(user_id=user_id).all()
-
-
-    @staticmethod
-    def get_reservations_by_book_id(book_id):
-        return Reserve.query.filter_by(book_id=book_id).all()

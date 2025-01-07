@@ -24,6 +24,26 @@ class LibraryRepository:
             raise e
 
     @staticmethod
+    def get_library_by_id(lib_id):
+        return Libraries.query.get(lib_id)
+
+    @staticmethod
+    def get_library_by_name(lib_name):
+        return Libraries.query.filter(Libraries.lib_name.ilike(f"%{lib_name}%")).first()
+
+    @staticmethod
+    def get_library_by_email(lib_email):
+        return Libraries.query.filter_by(lib_email=lib_email).first()
+
+    @staticmethod
+    def get_all_libraries():
+        return Libraries.query.all()
+
+    @staticmethod
+    def library_exists(lib_id):
+        return Libraries.query.filter_by(lib_id=lib_id).first() is not None
+
+    @staticmethod
     def update_library(lib_id, **kwargs):
         try:
             with db.session.begin():
@@ -56,37 +76,9 @@ class LibraryRepository:
             db.session.rollback()
             raise e
 
-    @staticmethod
-    def get_all_libraries():
-        return Libraries.query.all()
-    
-    @staticmethod
-    def get_library_by_id(lib_id):
-        return Libraries.query.get(lib_id)
-    
-    @staticmethod
-    def get_library_by_name(lib_name):
-        return Libraries.query.filter(Libraries.lib_name.ilike(f"%{lib_name}%")).first()
-    
-    @staticmethod
-    def get_library_by_email(lib_email):
-        return Libraries.query.filter_by(lib_email=lib_email).first()
-    
-    @staticmethod
-    def library_exists(lib_id):
-        return Libraries.query.filter_by(lib_id=lib_id).first() is not None
-
 
 class RacksRepository:
 
-    @staticmethod
-    def get_rack_by_id(rack_id):
-        return Racks.query.get(rack_id)
-    
-    @staticmethod
-    def get_racks_by_library(lib_id):
-        return Racks.query.filter_by(lib_id=lib_id).all()
-    
     @staticmethod
     def add_rack(lib_id, block, floor, room, locker, rack_no):
         try:
@@ -104,6 +96,34 @@ class RacksRepository:
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @staticmethod
+    def get_rack_by_id(rack_id):
+        return Racks.query.get(rack_id)
+
+    @staticmethod
+    def get_racks_by_library(lib_id):
+        return Racks.query.filter_by(lib_id=lib_id).all()
+
+    @staticmethod
+    def get_rack_by_block(lib_id, block):
+        return Racks.query.filter_by(lib_id=lib_id, block=block).all()
+
+    @staticmethod
+    def get_rack_by_floor(lib_id, floor):
+        return Racks.query.filter_by(lib_id=lib_id, floor=floor).all()
+
+    @staticmethod
+    def get_rack_by_room(lib_id, room):
+        return Racks.query.filter_by(lib_id=lib_id, room=room).all()
+
+    @staticmethod
+    def get_rack_by_locker(lib_id, locker):
+        return Racks.query.filter_by(lib_id=lib_id, locker=locker).all()
+
+    @staticmethod
+    def get_rack_by_rack_no(lib_id, rack_no):
+        return Racks.query.filter_by(lib_id=lib_id, rack_no=rack_no).all()
 
     @staticmethod
     def update_rack(rack_id, **kwargs):
@@ -124,7 +144,6 @@ class RacksRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-    
 
     @staticmethod
     def delete_rack(rack_id):
@@ -139,32 +158,5 @@ class RacksRepository:
             raise e
 
     @staticmethod
-    def get_rack_by_id(rack_id):
-        return Racks.query.get(rack_id)
-    
-    @staticmethod
-    def get_racks_by_library(lib_id):
-        return Racks.query.filter_by(lib_id=lib_id).all()
-    
-    @staticmethod
-    def get_rack_by_block(lib_id, block):
-        return Racks.query.filter_by(lib_id=lib_id, block=block).all()
-    
-    @staticmethod
-    def get_rack_by_floor(lib_id, floor):
-        return Racks.query.filter_by(lib_id=lib_id, floor=floor).all()
-    
-    @staticmethod
-    def get_rack_by_room(lib_id, room):
-        return Racks.query.filter_by(lib_id=lib_id, room=room).all()
-    
-    @staticmethod
-    def get_rack_by_locker(lib_id, locker):
-        return Racks.query.filter_by(lib_id=lib_id, locker=locker).all()
-    
-    @staticmethod
-    def get_rack_by_rack_no(lib_id, rack_no):
-        return Racks.query.filter_by(lib_id=lib_id, rack_no=rack_no).all()
-    
     def get_books_in_rack(rack_id):
         return Racks.query.get(rack_id).books
