@@ -24,6 +24,10 @@ class LibraryRepository:
             raise e
 
     @staticmethod
+    def get_all_libraries():
+        return Libraries.query.all()
+    
+    @staticmethod
     def get_library_by_id(lib_id):
         return Libraries.query.get(lib_id)
 
@@ -35,9 +39,10 @@ class LibraryRepository:
     def get_library_by_email(lib_email):
         return Libraries.query.filter_by(lib_email=lib_email).first()
 
+    
     @staticmethod
-    def get_all_libraries():
-        return Libraries.query.all()
+    def get_unverified_libraries():
+        return Libraries.query.filter_by(library_verified=False).all()
 
     @staticmethod
     def library_exists(lib_id):
