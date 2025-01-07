@@ -18,7 +18,9 @@ def login():
         if not user or not check_password_hash(user.user_password, data['password']):
             return jsonify({'message': 'Invalid email or password'}), 401
 
-        access_token = TokenManager.generate_token(user.user_id) 
+
+        access_token = TokenManager.generate_token(user.user_id, user.user_type) 
+
         
         return jsonify({
             'message': 'Login successful',
