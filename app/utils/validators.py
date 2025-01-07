@@ -90,15 +90,15 @@ class Validators:
 
     @staticmethod
     def hash_password(password: str) -> str:
+        return generate_password_hash(password)
+
+    @staticmethod
+    def hash_password(password: str) -> str:
         hashed = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
         if len(hashed) > 255:
             raise ValueError("Generated hash is too long")
         return hashed
     
-    @staticmethod
-    def verify_password(password: str, hashed_password: str) -> bool:
-        return check_password_hash(hashed_password, password)
-
     @staticmethod
     def validate_password(password: Any) -> bool:
         if not isinstance(password, str):
@@ -148,20 +148,7 @@ class Validators:
         return image.split('.')[-1].lower() in {'jpg', 'jpeg', 'png'}
 
     @staticmethod
-    def validate_image_size(image: Any) -> bool:
+    def validat_image_size(image: Any) -> bool:
         if not isinstance(image, str):
             return False
-        return len(image) <= 1024 * 1024 * 2
-
-    @staticmethod
-    def validate_url(url: Any) -> bool:
-        if not isinstance(url, str):
-            return False
-        pattern = r'^(https?|ftp)://[^\s/$.?#].[^\s]*$'
-        return bool(re.match(pattern, url))
-
-    @staticmethod
-    def validate_username(username: Any) -> bool:
-        if not isinstance(username, str):
-            return False
-        return bool(re.match(r'^[a-zA-Z0-9._-]{3,}$', username))
+        return len(image) <= 1024*1024*2
