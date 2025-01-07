@@ -23,32 +23,6 @@ class Responses:
         return jsonify(response), 200
 
     @staticmethod
-    def created(resource, data=None):
-        response = {
-            "status": "success",
-            "message": f"{resource} created successfully",
-            "data": Responses.to_serializable(data)
-        }
-        return jsonify(response), 201
-
-    @staticmethod
-    def updated(resource, data=None):
-        response = {
-            "status": "success",
-            "message": f"{resource} updated successfully",
-            "data": Responses.to_serializable(data)
-        }
-        return jsonify(response), 200
-
-    @staticmethod
-    def deleted(resource):
-        response = {
-            "status": "success",
-            "message": f"{resource} deleted successfully"
-        }
-        return jsonify(response), 200
-
-    @staticmethod
     def bad_request(errors=None):
         response = {
             "status": "fail",
@@ -56,48 +30,6 @@ class Responses:
             "errors": Responses.to_serializable(errors)
         }
         return jsonify(response), 400
-
-    @staticmethod
-    def error(message, errors=None, status_code=400):
-        response = {
-            "status": "error",
-            "message": message,
-            "errors": Responses.to_serializable(errors)
-        }
-        return jsonify(response), status_code
-
-    @staticmethod
-    def missing_fields(fields):
-        response = {
-            "status": "fail",
-            "message": "Missing required fields",
-            "fields": Responses.to_serializable(fields)
-        }
-        return jsonify(response), 400
-
-    @staticmethod
-    def unauthorized():
-        response = {
-            "status": "error",
-            "message": "Unauthorized access"
-        }
-        return jsonify(response), 401
-
-    @staticmethod
-    def forbidden():
-        response = {
-            "status": "error",
-            "message": "Forbidden action"
-        }
-        return jsonify(response), 403
-
-    @staticmethod
-    def not_found(resource):
-        response = {
-            "status": "error",
-            "message": f"{resource} not found"
-        }
-        return jsonify(response), 404
 
     @staticmethod
     def conflict(message):
@@ -108,29 +40,13 @@ class Responses:
         return jsonify(response), 409
 
     @staticmethod
-    def server_error():
+    def created(resource, data=None):
         response = {
-            "status": "error",
-            "message": "Internal server error"
+            "status": "success",
+            "message": f"{resource} created successfully",
+            "data": Responses.to_serializable(data)
         }
-        return jsonify(response), 500
-
-    @staticmethod
-    def validation_error(errors):
-        response = {
-            "status": "fail",
-            "message": "Bad request",
-            "errors": Responses.to_serializable(errors)
-        }
-        return jsonify(response), 400
-
-    @staticmethod
-    def rate_limit_exceeded():
-        response = {
-            "status": "error",
-            "message": "Rate limit exceeded. Please try again later."
-        }
-        return jsonify(response), 429
+        return jsonify(response), 201
 
     @staticmethod
     def custom(status, message, data=None, errors=None, status_code=200):
@@ -143,12 +59,29 @@ class Responses:
         return jsonify(response), status_code
 
     @staticmethod
-    def profile_not_found():
+    def deleted(resource):
+        response = {
+            "status": "success",
+            "message": f"{resource} deleted successfully"
+        }
+        return jsonify(response), 200
+
+    @staticmethod
+    def error(message, errors=None, status_code=400):
         response = {
             "status": "error",
-            "message": "Profile not found"
+            "message": message,
+            "errors": Responses.to_serializable(errors)
         }
-        return jsonify(response), 404
+        return jsonify(response), status_code
+
+    @staticmethod
+    def forbidden():
+        response = {
+            "status": "error",
+            "message": "Forbidden action"
+        }
+        return jsonify(response), 403
 
     @staticmethod
     def image_uploaded(data):
@@ -158,3 +91,71 @@ class Responses:
             "data": Responses.to_serializable(data)
         }
         return jsonify(response), 201
+
+    @staticmethod
+    def missing_fields(fields):
+        response = {
+            "status": "fail",
+            "message": "Missing required fields",
+            "fields": Responses.to_serializable(fields)
+        }
+        return jsonify(response), 400
+
+    @staticmethod
+    def not_found(resource):
+        response = {
+            "status": "error",
+            "message": f"{resource} not found"
+        }
+        return jsonify(response), 404
+
+    @staticmethod
+    def profile_not_found():
+        response = {
+            "status": "error",
+            "message": "Profile not found"
+        }
+        return jsonify(response), 404
+
+    @staticmethod
+    def rate_limit_exceeded():
+        response = {
+            "status": "error",
+            "message": "Rate limit exceeded. Please try again later."
+        }
+        return jsonify(response), 429
+
+    @staticmethod
+    def server_error():
+        response = {
+            "status": "error",
+            "message": "Internal server error"
+        }
+        return jsonify(response), 500
+
+    @staticmethod
+    def updated(resource, data=None):
+        response = {
+            "status": "success",
+            "message": f"{resource} updated successfully",
+            "data": Responses.to_serializable(data)
+        }
+        return jsonify(response), 200
+
+    @staticmethod
+    def unauthorized():
+        response = {
+            "status": "error",
+            "message": "Unauthorized access"
+        }
+        return jsonify(response), 401
+
+    @staticmethod
+    def validation_error(errors):
+        response = {
+            "status": "fail",
+            "message": "Bad request",
+            "errors": Responses.to_serializable(errors)
+        }
+        return jsonify(response), 400
+

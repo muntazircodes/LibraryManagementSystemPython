@@ -21,7 +21,6 @@ def register_library():
             'lib_docs'
         ]
 
-        # Check for missing fields
         missing_fields = [
             field for field in required_fields 
             if field not in data or not data[field]
@@ -29,7 +28,6 @@ def register_library():
         if missing_fields:
             return Responses.missing_fields(missing_fields)
         
-        # Define validators
         validators = {
             'lib_name': Validators.validate_name,
             'lib_email': Validators.validate_email,
@@ -67,7 +65,6 @@ def register_user():
     try:
         data = request.get_json()
 
-        # Define required fields
         required_fields = [
             'user_name',
             'user_email',
