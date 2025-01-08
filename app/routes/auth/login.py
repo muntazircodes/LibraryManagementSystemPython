@@ -18,10 +18,11 @@ def login():
         if not user or not check_password_hash(user.user_password, data['password']):
             return jsonify({'message': 'Invalid email or password'}), 401
 
+        if not user.user_verified:
+            return jsonify({'message': 'User is not verified'}), 403
 
         access_token = TokenManager.generate_token(user.user_id, user.user_type) 
 
-        
         return jsonify({
             'message': 'Login successful',
             'access_token': access_token,
