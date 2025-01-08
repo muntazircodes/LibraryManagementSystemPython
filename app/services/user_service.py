@@ -6,15 +6,19 @@ from app.repositories.user_repository import UserRepository
 
 class UserService:
 
-    @staticmethod
-    def handle_repository_action(action, *args, **kwargs):
-        try:
-            result = action(*args, **kwargs)
-            if not result:
-                return Responses.not_found(action.__name__.split('_')[1].capitalize())
-            return (Validators.serialize_model(result) if not isinstance(result, list) 
-                   else [Validators.serialize_model(item) for item in result])
-        except Exception:
+    def handle_repository_action(action, *args, **kwargs):         
+        try:             
+            result = action(*args, **kwargs)             
+            if not result:                 
+                return None
+                
+            return (                 
+                Validators.serialize_model(result)                 
+                if not isinstance(result, list)                 
+                else [Validators.serialize_model(item) for item in result]             
+            )
+            
+        except Exception as e:             
             return Responses.server_error()
 
 

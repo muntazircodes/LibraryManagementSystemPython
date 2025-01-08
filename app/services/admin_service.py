@@ -8,18 +8,21 @@ from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
 class AdminService:
 
+
     @staticmethod
-    def handle_repository_action(action, *args, **kwargs):
-        try:
-            result = action(*args, **kwargs)
-            if not result:
-                return Responses.not_found(action.__name__.split('_')[1].capitalize())
-            return (
-                Validators.serialize_model(result)
-                if not isinstance(result, list)
-                else [Validators.serialize_model(item) for item in result]
+    def handle_repository_action(action, *args, **kwargs):         
+        try:             
+            result = action(*args, **kwargs)             
+            if not result:                 
+                return None
+                
+            return (                 
+                Validators.serialize_model(result)                 
+                if not isinstance(result, list)                 
+                else [Validators.serialize_model(item) for item in result]             
             )
-        except Exception:
+            
+        except Exception as e:             
             return Responses.server_error()
 
 
@@ -99,6 +102,7 @@ class AdminService:
     @staticmethod
     def get_unverified_users():
         return AdminService.handle_repository_action(UserRepository.get_unverified_users)
+    
     @staticmethod
     def verify_user(user_id):
         return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
@@ -111,7 +115,7 @@ class AdminService:
 
     @staticmethod
     def get_all_admins():
-        return AdminService.handle_repository_action(UserRepository.get_library_admin)
+        return AdminService.handle_repository_action(UserRepository.get_admin)
 
 
     @staticmethod
