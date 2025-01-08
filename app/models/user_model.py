@@ -19,7 +19,6 @@ class User(db.Model):
     user_password = Column(String(255), nullable=False)
     
     user_type = Column(String(50), nullable=False, server_default=UserTypeEnum.User.value)
-    is_admin = Column(Boolean, nullable=False, default=False)
 
     user_verified = Column(Boolean, nullable=False, default=False) 
     phone_number = Column(String(20), nullable=True)
