@@ -58,9 +58,8 @@ class UserRepository:
         return user.user_fine if user else None
 
     @staticmethod     
-    def get_library_admin():
+    def get_admin():
         return User.query.filter_by(user_type='Admin').all()
-
     @staticmethod
     def user_borrowings(user_id):
         user = User.query.get(user_id)
