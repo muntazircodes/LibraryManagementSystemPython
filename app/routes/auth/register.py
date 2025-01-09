@@ -84,6 +84,9 @@ def register_user():
         library = LibraryRepository.get_library_by_id(data.get('lib_id'))
         if not library:
             return Responses.not_found("Library with provided ID does not exist")
+        
+        if not library.lib_verified:
+            return Responses.not_allowed("Library is not verified")
 
         validators = {
             'user_name': Validators.validate_name,
