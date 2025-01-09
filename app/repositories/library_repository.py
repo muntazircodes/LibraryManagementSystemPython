@@ -47,7 +47,11 @@ class LibraryRepository:
     @staticmethod
     def library_exists(lib_id):
         return Libraries.query.filter_by(lib_id=lib_id).first() is not None
-
+    
+    @staticmethod
+    def get_verified_libraries():
+        return Libraries.query.filter_by(library_verified=True).all()
+    
     @staticmethod
     def check_lib_users(lib_id):
         lib = LibraryRepository.get_library_by_id(lib_id) 

@@ -57,9 +57,7 @@ class UserRepository:
         user = User.query.get(user_id)
         return user.user_fine if user else None
 
-    @staticmethod     
-    def get_admin():
-        return User.query.filter_by(user_type='Admin').all()
+
     @staticmethod
     def user_borrowings(user_id):
         user = User.query.get(user_id)
@@ -86,11 +84,13 @@ class UserRepository:
             raise e
         return user
 
+
     @staticmethod
     def update_user_fine(user_id, fine_amount):
         user = User.query.get(user_id)
         user.user_fine = fine_amount
         db.session.commit()
+
 
     @staticmethod
     def add_user_allowed_books(user_id, allowed_books):
@@ -98,17 +98,25 @@ class UserRepository:
         user.allowed_books += allowed_books
         db.session.commit()
 
+
     @staticmethod
     def promote_as_admin(user_id):
         user = User.query.get(user_id)
         user.user_type = 'Admin'
         db.session.commit()
 
+
+    @staticmethod     
+    def get_admin():
+        return User.query.filter_by(user_type='Admin').all()
+
+
     @staticmethod
     def verify_user(user_id):
         user = User.query.get(user_id)
         user.user_verified = True
         db.session.commit()
+
 
     @staticmethod
     def verify_all_at_once():
@@ -117,10 +125,17 @@ class UserRepository:
             user.user_verified = True
         db.session.commit()
 
+
+    @staticmethod
+    def is_verified(user_id):
+        return User.query.filter_by(user_id=user_id, user_verified=True).first() is not None
+
+
     @staticmethod
     def is_admin(user_id):
         user = User.query.get(user_id)
         return user.user_type == 'Admin'
+
 
     @staticmethod
     def delete_user(user_id):
@@ -128,18 +143,17 @@ class UserRepository:
         db.session.delete(user)
         db.session.commit()
 
+
     @staticmethod
     def user_belong_this_lib(user_id, lib_id):
         user = User.query.get(user_id)
         return user.lib_id == lib_id if user else False
+  
     
     @staticmethod
     def get_verified_users():
         return User.query.filter_by(user_verified=True).all()
     
-    @staticmethod
-    def is_verified(user_id):
-        return User.query.filter_by(user_id=user_id, user_verified=True).first() is not None
     
 class ReportRepository:
 
