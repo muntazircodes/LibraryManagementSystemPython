@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from typing import Any, List
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.utils.responses import Responses
 
 
 class Validators:
@@ -152,3 +153,26 @@ class Validators:
         if not isinstance(image, str):
             return False
         return len(image) <= 1024*1024*2
+    
+    @staticmethod
+    def handle_repository_action(action, *args, **kwargs):         
+        try:             
+            result = action(*args, **kwargs)             
+            if not result:                 
+                return None
+                
+            return (                 
+                Validators.serialize_model(result)                 
+                if not isinstance(result, list)                 
+                else [Validators.serialize_model(item) for item in result]             
+            )
+            
+        except Exception as e:             
+            return Responses.server_error()
+        
+    @staticmethod
+    def validate_and_serialize(data, validators):
+        for field, validator in validators.items():
+            if not validator(data.get(field)):
+                return field
+        return None
