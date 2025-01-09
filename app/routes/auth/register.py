@@ -34,7 +34,7 @@ def register_library():
             'lib_admin': Validators.validate_name,
         }
 
-        validation_error = AdminService.validate_and_serialize(data, validators)
+        validation_error = Validators.validate_and_serialize(data, validators)
         if validation_error:
             return Responses.validation_error(validation_error)
 
@@ -95,7 +95,7 @@ def register_user():
             'phone_number': Validators.validate_phone
         }
 
-        validation_error = AdminService.validate_and_serialize(data, validators)
+        validation_error = Validators.validate_and_serialize(data, validators)
         if validation_error:
             return Responses.validation_error(validation_error)
 
