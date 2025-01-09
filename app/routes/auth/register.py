@@ -62,7 +62,7 @@ def register_library():
 
 @register_bp.route('/user/register', methods=['POST'])
 def register_user():
-    try:
+        
         data = request.get_json()
 
         required_fields = [
@@ -85,8 +85,8 @@ def register_user():
         if not library:
             return Responses.not_found("Library with provided ID does not exist")
         
-        if not library.lib_verified:
-            return Responses.not_allowed("Library is not verified")
+        if not library.library_verified:
+            return Responses.conflict("Library is not verified")
 
         validators = {
             'user_name': Validators.validate_name,
@@ -122,6 +122,3 @@ def register_user():
             del created_user['user_password']
 
         return Responses.created("User", data=created_user)
-
-    except Exception as e:
-        return Responses.server_error()
