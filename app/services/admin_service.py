@@ -8,24 +8,6 @@ from app.repositories.book_repository import CopiesRepository, BorrowRepository
 
 class AdminService:
 
-
-    @staticmethod
-    def handle_repository_action(action, *args, **kwargs):         
-        try:             
-            result = action(*args, **kwargs)             
-            if not result:                 
-                return None
-                
-            return (                 
-                Validators.serialize_model(result)                 
-                if not isinstance(result, list)                 
-                else [Validators.serialize_model(item) for item in result]             
-            )
-            
-        except Exception as e:             
-            return Responses.server_error()
-
-
     @staticmethod
     def validate_and_serialize(data, validators):
         for field, validator in validators.items():
@@ -46,7 +28,7 @@ class AdminService:
                 return Responses.conflict("Library with this email already exists")
 
             new_library_data = {field: lib_data.get(field) for field in allowed_fields}
-            return AdminService.handle_repository_action(LibraryRepository.add_library, **new_library_data)
+            return Validators.handle_repository_action(LibraryRepository.add_library, **new_library_data)
         except Exception:
             return Responses.server_error()
 
@@ -66,24 +48,32 @@ class AdminService:
                 return Responses.not_found("Library")
 
             new_user_data = {field: user_data.get(field) for field in allowed_fields}
-            return AdminService.handle_repository_action(UserRepository.add_user, **new_user_data)
+            return Validators.handle_repository_action(UserRepository.add_user, **new_user_data)
         except Exception:
             return Responses.server_error()
-
+        
 
     @staticmethod
     def get_all_libraries():
-        return AdminService.handle_repository_action(LibraryRepository.get_all_libraries)
+        return Validators.handle_repository_action(LibraryRepository.get_all_libraries)
 
 
     @staticmethod
     def get_library(lib_id):
-        return AdminService.handle_repository_action(LibraryRepository.get_library_by_id, lib_id)
+        return Validators.handle_repository_action(LibraryRepository.get_library_by_id, lib_id)
     
 
     @staticmethod
     def get_unverified_libraries():
-        return AdminService.handle_repository_action(LibraryRepository.get_unverified_libraries)
+        return Validators.handle_repository_action(LibraryRepository.get_unverified_libraries)
+    
+    @staticmethod
+    def get_unverified_users():
+        return Validators.handle_repository_action(UserRepository.get_unverified_users)
+
+    @staticmethod
+    def delete_library(lib_id):
+        return Validators.handle_repository_action(LibraryRepository.delete_library, lib_id)
 
 
     @staticmethod
@@ -98,44 +88,48 @@ class AdminService:
         except Exception:
             return Responses.server_error()
         
-
-    @staticmethod
-    def get_unverified_users():
-        return AdminService.handle_repository_action(UserRepository.get_unverified_users)
     
     @staticmethod
     def verify_user(user_id):
-        return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
+        try:
+            user = UserRepository.get_user_by_id(user_id)
+            if not user:
+                return Responses.not_found("The user not found")
+            user.user_verified = True
+            db.session.commit()
+            return Validators.serialize_model(user)
+        except Exception:
+            return Responses.server_error()
 
 
     @staticmethod
     def promote_user(user_id):
-        return AdminService.handle_repository_action(UserRepository.promote_as_admin, user_id)
+        return Validators.handle_repository_action(UserRepository.promote_as_admin, user_id)
 
 
     @staticmethod
     def get_all_admins():
-        return AdminService.handle_repository_action(UserRepository.get_admin)
+        return Validators.handle_repository_action(UserRepository.get_admin)
 
 
     @staticmethod
     def get_defaulter_users():
-        return AdminService.handle_repository_action(UserRepository.get_defaulter_user)
+        return Validators.handle_repository_action(UserRepository.get_defaulter_user)
 
 
     @staticmethod
     def track_user_fine(user_id):
-        return AdminService.handle_repository_action(UserRepository.get_user_by_id, user_id)
+        return Validators.handle_repository_action(UserRepository.check_user_fine, user_id)
 
 
     @staticmethod
     def check_user_borrowings(user_id):
-        return AdminService.handle_repository_action(BorrowRepository.get_borrowings_by_user_id, user_id)
+        return Validators.handle_repository_action(BorrowRepository.get_borrowings_by_user_id, user_id)
 
 
     @staticmethod
     def check_copy_status(copy_id):
-        return AdminService.handle_repository_action(CopiesRepository.get_copies_by_book_id, copy_id)
+        return Validators.handle_repository_action(CopiesRepository.get_copies_by_book_id, copy_id)
 
 
     @staticmethod
@@ -156,7 +150,7 @@ class AdminService:
 
     @staticmethod
     def discard_user(user_id):
-        return AdminService.handle_repository_action(UserRepository.delete_user, user_id)
+        return Validators.handle_repository_action(UserRepository.delete_user, user_id)
 
 
     @staticmethod
@@ -174,4 +168,5 @@ class AdminService:
 
     @staticmethod
     def update_racks(rack_id):
-        return AdminService.handle_repository_action(RacksRepository.update_rack, rack_id)
+        return Validators.handle_repository_action(RacksRepository.update_rack, rack_id)
+
