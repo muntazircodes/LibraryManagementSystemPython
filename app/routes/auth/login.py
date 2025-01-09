@@ -30,7 +30,8 @@ def login():
                 'id': user.user_id,
                 'email': user.user_email,
                 'name': user.user_name,
-                'type': user.user_type
+                'type': user.user_type,
+                'library':user.lib_id
             }
         }), 200
 

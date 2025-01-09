@@ -102,23 +102,25 @@ def register_user():
         existing_user = UserRepository.get_user_by_email(data.get('user_email'))
         if existing_user:
             return Responses.conflict("User with this email already exists")
+        try:
+            data['user_password'] = Validators.hash_password(data.get('user_password'))
 
-        data['user_password'] = Validators.hash_password(data.get('user_password'))
+            new_user_data = {field: data.get(field) for field in required_fields}
+            result = Validators.handle_repository_action(
+                UserRepository.add_user, 
+                **new_user_data
+            )
 
-        new_user_data = {field: data.get(field) for field in required_fields}
-        result = AdminService.handle_repository_action(
-            UserRepository.add_user, 
-            **new_user_data
-        )
+            if not result:
+                return Responses.error("Failed to create user")
 
-        if not result:
-            return Responses.error("Failed to create user")
+            created_user = UserRepository.get_user_by_email(data.get('user_email'))
+            if not created_user:
+                return Responses.error("User creation failed - database verification failed")
 
-        created_user = UserRepository.get_user_by_email(data.get('user_email'))
-        if not created_user:
-            return Responses.error("User creation failed - database verification failed")
+            if isinstance(created_user, dict) and 'user_password' in created_user:
+                del created_user['user_password']
 
-        if isinstance(created_user, dict) and 'user_password' in created_user:
-            del created_user['user_password']
-
-        return Responses.created("User", data=created_user)
+            return Responses.created("User", data=created_user)
+        except Exception as e:
+            return Responses.server_error()
