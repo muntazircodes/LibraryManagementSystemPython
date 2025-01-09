@@ -128,7 +128,19 @@ class UserRepository:
         db.session.delete(user)
         db.session.commit()
 
-
+    @staticmethod
+    def user_belong_this_lib(user_id, lib_id):
+        user = User.query.get(user_id)
+        return user.lib_id == lib_id if user else False
+    
+    @staticmethod
+    def get_verified_users():
+        return User.query.filter_by(user_verified=True).all()
+    
+    @staticmethod
+    def is_verified(user_id):
+        return User.query.filter_by(user_id=user_id, user_verified=True).first() is not None
+    
 class ReportRepository:
 
     @staticmethod
