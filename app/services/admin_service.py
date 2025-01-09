@@ -75,7 +75,9 @@ class AdminService:
     def delete_library(lib_id):
         return Validators.handle_repository_action(LibraryRepository.delete_library, lib_id)
 
-
+    @staticmethod
+    def get_user(user_id):
+        return Validators.handle_repository_action(UserRepository.get_user_by_id, user_id)
     @staticmethod
     def verify_library(lib_id):
         try:
