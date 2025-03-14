@@ -1,6 +1,7 @@
 from app.utils.db import db
 from sqlalchemy import String, Integer, Float, DateTime, Boolean, ForeignKey
 from sqlalchemy.types import Enum
+from app.enums.copy_condition_enum import BookConditionEnum
 from sqlalchemy.orm import relationship
 
 class Books(db.Model):
@@ -31,7 +32,7 @@ class Copies(db.Model):
     book_id = db.Column(Integer, ForeignKey('books.book_id'), nullable=False)
     rack_id = db.Column(Integer, ForeignKey('rack.rack_id'), nullable=False)
     copy_status = db.Column(String(100), default="Available", nullable=False)
-    condition = db.Column(Enum("New", "Good", "Fair", "Damaged"), default="New", nullable=False)
+    condition = db.Column(BookConditionEnum, default=BookConditionEnum.EXCELENT, nullable=False)
     copy_rack = db.Column(String(100))
     copy_available = db.Column(Enum("Yes", "No"), default="Yes", nullable=False)
     copy_remarks = db.Column(String(100))

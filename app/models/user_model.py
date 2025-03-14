@@ -1,14 +1,11 @@
 from app.utils.db import db
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text, ForeignKey
 from sqlalchemy.sql import func
+from app.enums.user_role_enum import UserRoleEnum
+from app.enums.user_status_enum import UserStatusEnum
 from sqlalchemy.orm import relationship
-import enum
 
-class UserTypeEnum(enum.Enum):
 
-    Admin = 'Admin'
-    SuperAdmin = 'Super Admin'
-    User = 'User'
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -18,9 +15,10 @@ class User(db.Model):
     user_email = Column(String(255), nullable=False, unique=True)
     user_password = Column(String(255), nullable=False)
     
-    user_type = Column(String(50), nullable=False, server_default=UserTypeEnum.User.value)
+    user_type = Column(String(50), nullable=False, server_default=UserRoleEnum.USER)
 
-    user_verified = Column(Boolean, nullable=False, default=False) 
+    user_verified = Column(UserStatusEnum, nullable=False, default=UserStatusEnum.UNVERIFIED) 
+
     phone_number = Column(String(20), nullable=True)
     valid_docs = Column(String(255), nullable=True)
     profile_picture = Column(String(255), nullable=True)
