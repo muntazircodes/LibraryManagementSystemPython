@@ -1,5 +1,5 @@
 from app.utils.db import db
-from sqlalchemy import String, Integer, Boolean
+from sqlalchemy import String, Integer
 from app.enums.libraray_status_enum import LibraryStatusEnum
 from sqlalchemy.orm import relationship
 
@@ -13,7 +13,7 @@ class Libraries(db.Model):
     lib_email = db.Column(String(100), nullable=False, unique=True)
     lib_license = db.Column(String(100), nullable=False, unique=True)
     lib_docs = db.Column(String(100), nullable=False)
-    library_verified = db.Column(LibraryStatusEnum, default=LibraryStatusEnum.UNVERIFIED, nullable=False)
+    library_verified = db.Enum(LibraryStatusEnum, default=LibraryStatusEnum.UNVERIFIED, nullable=False)
 
     books = relationship('Books', back_populates='library', cascade="all, delete-orphan")
     rack = relationship('Racks', back_populates='library', cascade="all, delete-orphan") 
