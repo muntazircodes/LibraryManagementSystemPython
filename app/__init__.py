@@ -18,12 +18,9 @@ def create_app():
 
         from app.routes.auth.register import register_bp
         from app.routes.auth.login import auth_bp
-        from app.routes.pages.admins import superamdin_bp, admin_bp
 
         app.register_blueprint(register_bp)
         app.register_blueprint(auth_bp)
-        app.register_blueprint(superamdin_bp)
-        app.register_blueprint(admin_bp)
         
     return app
 
