@@ -1,6 +1,6 @@
 from enum import Enum
 
-class BookConditionEnum(Enum):
+class CopyConditionEnum(Enum):
    EXCELENT = 'Excelent'
    GOOD = 'Good'
    WORN = 'Worn'
