@@ -1,5 +1,6 @@
 from app.utils.db import db
-from app.models.libraries_model import Libraries, Racks
+from app.models.libraries_model import Libraries
+from app.models.racks_model import Racks
 from app.models.user_model import User
 
 class LibraryRepository:

@@ -1,4 +1,7 @@
-from app.models.book_model import Books, Copies, Borrowing, Reserve
+from app.models.book_model import Books
+from app.models.copies_model import Copies
+from app.models.borrowing_model import Borrowing
+from app.models.reserve_model import Reserve
 from app.models.user_model import User
 from app.utils.db import db
 
@@ -50,28 +53,21 @@ class BookRepository:
         return Books.query.get_or_404(book_id) 
 
     @staticmethod
-    def get_book_by_name(book_name):
-        return Books.query.filter(Books.book_name.ilike(f"%{book_name}%")).all()
+    def get_books_by_filter(**kwargs):
+        allowed_fields = ['book_name', 'isbn', 'author', 'publisher', 'edition', 'book_genre']
 
-    @staticmethod 
-    def get_book_by_isbn(isbn):
-        return Books.query.filter_by(isbn=isbn).first()
+        query = Books.query
 
-    @staticmethod
-    def get_book_by_author(author):
-        return Books.query.filter(Books.author.ilike(f"%{author}%")).all()
+        for field in allowed_fields:
+            if field in kwargs:
+                value = kwargs[field]
+                if field in ['book_name', 'author', 'publisher', 'book_genre']:
+                    query = query.filter(getattr(Books, field).ilike(f"%{value}%"))
+                else:  # For exact match
+                    query = query.filter_by(**{field: value})
 
-    @staticmethod
-    def get_book_by_publisher(publisher):
-        return Books.query.filter(Books.publisher.ilike(f"%{publisher}%")).all()
+        return query.all() if kwargs else []
 
-    @staticmethod
-    def get_book_by_edition(edition):
-        return Books.query.filter_by(edition=edition).all()
-
-    @staticmethod
-    def get_book_by_genre(genre):
-        return Books.query.filter(Books.book_genre.ilike(f"%{genre}%")).all()
 
     @staticmethod
     def update_book(book_id, **kwargs):

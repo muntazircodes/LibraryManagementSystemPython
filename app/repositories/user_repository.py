@@ -1,5 +1,8 @@
 from app.utils.db import db
-from app.models.user_model import User, Report
+from app.models.user_model import User
+from app.models.report_model import Report
+from app.enums.user_role_enum import UserRoleEnum
+from app.enums.user_status_enum import UserStatusEnum
 from app.repositories.library_repository import LibraryRepository
 
 
@@ -27,6 +30,12 @@ class UserRepository:
         db.session.add(new_user)
         db.session.commit()
         return new_user
+    
+
+    @staticmethod
+    def get_all_users():
+        return User.query.all()
+    
 
     @staticmethod
     def get_user_by_id(user_id):
@@ -41,12 +50,8 @@ class UserRepository:
         return User.query.filter(User.user_name.ilike(f"%{user_name}%")).all()
 
     @staticmethod
-    def get_all_users():
-        return User.query.all()
-
-    @staticmethod
     def get_unverified_users():
-        return User.query.filter_by(user_verified=False).all()
+        return User.query.filter_by(user_verified = UserStatusEnum.UNVERIFIED).all()
 
     @staticmethod
     def get_defaulter_user():
@@ -102,39 +107,20 @@ class UserRepository:
     @staticmethod
     def promote_as_admin(user_id):
         user = User.query.get(user_id)
-        user.user_type = 'Admin'
+        user.user_type = UserRoleEnum.ADMIN
         db.session.commit()
 
 
     @staticmethod     
     def get_admin():
-        return User.query.filter_by(user_type='Admin').all()
+        return User.query.filter_by(user_type=UserRoleEnum.ADMIN).all()
 
 
     @staticmethod
     def verify_user(user_id):
         user = User.query.get(user_id)
-        user.user_verified = True
+        user.user_verified =UserStatusEnum.VERIFIED
         db.session.commit()
-
-
-    @staticmethod
-    def verify_all_at_once():
-        users = User.query.all()
-        for user in users:
-            user.user_verified = True
-        db.session.commit()
-
-
-    @staticmethod
-    def is_verified(user_id):
-        return User.query.filter_by(user_id=user_id, user_verified=True).first() is not None
-
-
-    @staticmethod
-    def is_admin(user_id):
-        user = User.query.get(user_id)
-        return user.user_type == 'Admin'
 
 
     @staticmethod
