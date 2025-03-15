@@ -1,9 +1,7 @@
 from app.utils.db import db
 from sqlalchemy.sql import func
-from sqlalchemy import String, Integer, Float, DateTime, ForeignKey, Text, Boolean
-from app.enums.user_role_enum import UserRoleEnum
-from app.enums.user_status_enum import UserStatusEnum
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, Integer, Float, DateTime, ForeignKey
+from app.enums import UserRoleEnum, UserStatusEnum
 
 
 
@@ -30,19 +28,6 @@ class User(db.Model):
     
     DOJ = db.Column(DateTime, server_default=func.now(), nullable=False) 
 
-    borrowings = relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
-    reservations = relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
-    reports = relationship('Report', back_populates='user', cascade="all, delete-orphan")
-
-class Report(db.Model):
-    __tablename__ = 'reports'
-
-    report_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    subject = db.Column(String(100), nullable=False)
-    message = db.Column(Text, nullable=False)
-    handled_by = db.Column(String(100), nullable=False)
-    handled = db.Column(Boolean, nullable=False, default=False) 
-    report_date = db.Column(DateTime, server_default=func.now(), nullable=False)
-
-    user = relationship('User', back_populates='reports')
+    borrowings = db.relationship('Borrowing', back_populates='user', cascade="all, delete-orphan")
+    reservations = db.relationship('Reserve', back_populates='user', cascade="all, delete-orphan")
+    reports = db.relationship('Report', back_populates='user', cascade="all, delete-orphan")
