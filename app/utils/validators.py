@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Any, List
 from werkzeug.security import generate_password_hash
-from app.utils.responses import Responses
+from .responses import Responses
 
 
 class Validators:
