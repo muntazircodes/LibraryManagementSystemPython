@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from typing import Any, List
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from app.utils.responses import Responses
 
 
