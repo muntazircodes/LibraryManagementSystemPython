@@ -1,5 +1,5 @@
 from app.utils.db import db
-from sqlalchemy import String, Integer, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy import String, Integer, Float, ForeignKey
 
 class Books(db.Model):
     __tablename__ = 'books'
