@@ -7,14 +7,14 @@ from ..repositories import LibraryRepository
 class UserRepository:   
 
     @staticmethod
-    def add_user (
+    def addUser (
         user_name, user_email, user_password, lib_id, 
         phone_number, valid_docs
     ):
         if User.query.filter_by(user_email=user_email).first():
             raise ValueError("User with this email already exists")
 
-        if not LibraryRepository.library_exists(lib_id):
+        if not LibraryRepository.getLibraryById(lib_id):
             raise ValueError("Library with this ID does not exist")
 
         new_user = User(
@@ -31,43 +31,43 @@ class UserRepository:
     
 
     @staticmethod
-    def get_all_users():
+    def getAllUsers():
         return User.query.all()
     
 
     @staticmethod
-    def get_user_by_id(user_id):
+    def getUserById(user_id):
         return User.query.get(user_id)
 
     @staticmethod
-    def get_user_by_email(user_email): 
+    def getUserByEmail(user_email): 
         return User.query.filter_by(user_email=user_email).first()
 
     @staticmethod
-    def get_user_by_name(user_name):
+    def getUserByName(user_name):
         return User.query.filter(User.user_name.ilike(f"%{user_name}%")).all()
 
     @staticmethod
-    def get_unverified_users():
-        return User.query.filter_by(user_verified = UserStatusEnum.UNVERIFIED).all()
+    def getVerifiedUsers():
+        return User.query.filter_by(user_verified = UserStatusEnum.VERIFIED).all()
 
     @staticmethod
     def get_defaulter_user():
         return User.query.filter(User.user_fine > 0).all()
 
     @staticmethod
-    def check_user_fine(user_id):
+    def checkUserFine(user_id):
         user = User.query.get(user_id)
         return user.user_fine if user else None
 
 
     @staticmethod
-    def user_borrowings(user_id):
+    def userBorrowings(user_id):
         user = User.query.get(user_id)
         return user.alloted_books 
 
     @staticmethod
-    def update_user(user_id, **kwargs):
+    def updateUser(user_id, **kwargs):
         user = User.query.get(user_id)
         if not user:
             raise ValueError("User not found")
@@ -89,40 +89,40 @@ class UserRepository:
 
 
     @staticmethod
-    def update_user_fine(user_id, fine_amount):
+    def updateUserFine(user_id, fine_amount):
         user = User.query.get(user_id)
         user.user_fine = fine_amount
         db.session.commit()
 
 
     @staticmethod
-    def add_user_allowed_books(user_id, allowed_books):
+    def addUserAllowedBooks(user_id, allowed_books):
         user = User.query.get(user_id)
         user.allowed_books += allowed_books
         db.session.commit()
 
 
     @staticmethod
-    def promote_as_admin(user_id):
+    def promoteAsAdmin(user_id):
         user = User.query.get(user_id)
         user.user_type = UserRoleEnum.ADMIN
         db.session.commit()
 
 
     @staticmethod     
-    def get_admin():
+    def getAdmin():
         return User.query.filter_by(user_type=UserRoleEnum.ADMIN).all()
 
 
     @staticmethod
-    def verify_user(user_id):
+    def verifyUser(user_id):
         user = User.query.get(user_id)
         user.user_verified =UserStatusEnum.VERIFIED
         db.session.commit()
 
 
     @staticmethod
-    def delete_user(user_id):
+    def deleteUser(user_id):
         user = User.query.get(user_id)
         db.session.delete(user)
         db.session.commit()
@@ -135,7 +135,7 @@ class UserRepository:
   
     
     @staticmethod
-    def get_verified_users():
+    def getVerifiedUsers():
         return User.query.filter_by(user_verified=True).all()
     
     

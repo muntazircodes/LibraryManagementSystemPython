@@ -5,7 +5,7 @@ from app.models import Books, Copies
 class BookRepository:
 
     @staticmethod
-    def add_new_book(book_name, book_image, author, publisher, book_genre, edition, 
+    def addNewBook(book_name, book_image, author, publisher, book_genre, edition, 
                      isbn, price, lib_id, book_stock, volume=None):
         try:
             with db.session.begin():
@@ -41,15 +41,15 @@ class BookRepository:
             raise e
 
     @staticmethod 
-    def get_all_books():
+    def getAllBooks():
         return Books.query.all()
 
     @staticmethod
-    def get_book_by_id(book_id):
+    def getBookById(book_id):
         return Books.query.get_or_404(book_id) 
 
     @staticmethod
-    def get_books_by_filter(**kwargs):
+    def getBookByFilter(**kwargs):
         allowed_fields = ['book_name', 'isbn', 'author', 'publisher', 'edition', 'book_genre']
 
         query = Books.query
@@ -63,10 +63,11 @@ class BookRepository:
                     query = query.filter_by(**{field: value})
 
         return query.all() if kwargs else []
+    
 
 
     @staticmethod
-    def update_book(book_id, **kwargs):
+    def updateBook(book_id, **kwargs):
         try:
             with db.session.begin():
                 book = Books.query.get_or_404(book_id)
@@ -78,7 +79,7 @@ class BookRepository:
                 ]
                 
                 if 'isbn' in kwargs:
-                    existing_book = BookRepository.get_book_by_isbn(kwargs['isbn'])
+                    existing_book = BookRepository.getBookByFilter(kwargs['isbn'])
                     if existing_book and existing_book.book_id != book_id:
                         raise ValueError("Books with this ISBN already exists")
                 
@@ -98,7 +99,7 @@ class BookRepository:
             raise e
 
     @staticmethod
-    def delete_book(book_id):
+    def deleteBook(book_id):
         try:
             with db.session.begin():
                 book = Books.query.get_or_404(book_id)

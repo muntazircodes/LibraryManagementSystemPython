@@ -4,7 +4,7 @@ from app.models import Racks
 class RacksRepository:
 
     @staticmethod
-    def add_rack(lib_id, block, floor, room, locker, rack_no):
+    def addRack(lib_id, block, floor, room, locker, rack_no):
         try:
             new_rack = Racks(
                 lib_id=lib_id,
@@ -22,15 +22,15 @@ class RacksRepository:
             raise e
 
     @staticmethod
-    def get_rack_by_id(rack_id):
+    def getRackById(rack_id):
         return Racks.query.get(rack_id)
 
     @staticmethod
-    def get_racks_by_library(lib_id):
+    def getRacksByLibrary(lib_id):
         return Racks.query.filter_by(lib_id=lib_id).all()
 
     @staticmethod
-    def get_racks_by_filters(lib_id, **kwargs):
+    def getRacksByfilters(lib_id, **kwargs):
         filters = {'lib_id': lib_id}
         allowed_filters = ['block', 'floor', 'room', 'locker', 'rack_no']
         
@@ -41,7 +41,7 @@ class RacksRepository:
         return Racks.query.filter_by(**filters).all()
 
     @staticmethod
-    def update_rack(rack_id, **kwargs):
+    def updateRack(rack_id, **kwargs):
         try:
             with db.session.begin():
                 rack = Racks.query.get_or_404(rack_id)
@@ -61,7 +61,7 @@ class RacksRepository:
             raise e
 
     @staticmethod
-    def delete_rack(rack_id):
+    def deleteRack(rack_id):
         try:
             rack = Racks.query.get(rack_id)
             if not rack:
@@ -73,5 +73,5 @@ class RacksRepository:
             raise e
 
     @staticmethod
-    def get_books_in_rack(rack_id):
+    def getBooksInRack(rack_id):
         return Racks.query.get(rack_id).books

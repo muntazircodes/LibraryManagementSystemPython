@@ -5,7 +5,7 @@ from app.enums import LibraryStatusEnum
 class LibraryRepository:
 
     @staticmethod
-    def add_library(lib_name, lib_address, lib_admin, lib_license, lib_docs, lib_email):
+    def addLibrary(lib_name, lib_address, lib_admin, lib_license, lib_docs, lib_email):
         try:
             new_library = Libraries(
                 lib_name=lib_name,
@@ -24,29 +24,29 @@ class LibraryRepository:
             raise e
 
     @staticmethod
-    def get_all_libraries():
+    def getAllLibraries():
         return Libraries.query.all()
     
     @staticmethod
-    def get_library_by_id(lib_id):
+    def getLibraryById(lib_id):
         return Libraries.query.get(lib_id)
 
     @staticmethod
-    def get_library_by_name(lib_name):
+    def getLibraryByName(lib_name):
         return Libraries.query.filter(Libraries.lib_name.ilike(f"%{lib_name}%")).first()
 
     @staticmethod
-    def get_library_by_email(lib_email):
+    def getLibraryByEmail(lib_email):
         return Libraries.query.filter_by(lib_email=lib_email).first()
 
 
     @staticmethod
-    def get_verified_libraries():
+    def getVerifiedlibraries():
         return Libraries.query.filter_by(library_verified=LibraryStatusEnum.VERIFIED).all()
     
     @staticmethod
-    def check_lib_users(lib_id):
-        library = LibraryRepository.get_library_by_id(lib_id) 
+    def checkLibraryUsers(lib_id):
+        library = LibraryRepository.getLibraryByid(lib_id) 
         if not library:
             return {"message":"Library not found"}
         users = User.query.filter_by(lib_id=lib_id).all()
@@ -56,7 +56,7 @@ class LibraryRepository:
             return users
 
     @staticmethod
-    def update_library(lib_id, **kwargs):
+    def updateLibrary(lib_id, **kwargs):
         try:
             with db.session.begin():
                 library = Libraries.query.get(lib_id)
@@ -80,7 +80,7 @@ class LibraryRepository:
             raise e
 
     @staticmethod
-    def delete_library(lib_id):
+    def deleteLibrary(lib_id):
         try:
             library = Libraries.query.get(lib_id)
             if not library:

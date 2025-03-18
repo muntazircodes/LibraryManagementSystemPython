@@ -5,7 +5,7 @@ from app.models import Books, Reserve
 class ReserveRepository:
 
     @staticmethod
-    def add_new_reservation(user_id, book_id):
+    def addReservation(user_id, book_id):
         try:
             with db.session.begin():
                 # Check if book exists
@@ -36,23 +36,19 @@ class ReserveRepository:
             raise e
 
     @staticmethod
-    def get_all_reservations():
+    def getAllReservations():
         return Reserve.query.all()
 
     @staticmethod
-    def get_reservation_by_id(reserve_id):
+    def getReservationById(reserve_id):
         return Reserve.query.get_or_404(reserve_id)
 
     @staticmethod
-    def get_reservations_by_user_id(user_id):
+    def getUserReservation(user_id):
         return Reserve.query.filter_by(user_id=user_id).all()
 
     @staticmethod
-    def get_reservations_by_book_id(book_id):
-        return Reserve.query.filter_by(book_id=book_id).all()
-
-    @staticmethod
-    def update_reservation(reserve_id, **kwargs):
+    def updateReservation(reserve_id, **kwargs):
         try:
             with db.session.begin():
                 reservation = Reserve.query.get_or_404(reserve_id)
@@ -69,7 +65,7 @@ class ReserveRepository:
             raise e
 
     @staticmethod
-    def delete_reservation(reserve_id):
+    def deleteReservation(reserve_id):
         try:
             with db.session.begin():
                 reservation = Reserve.query.get_or_404(reserve_id)

@@ -5,7 +5,7 @@ from app.models import Books, Copies
 class CopiesRepository:
 
     @staticmethod
-    def add_copies(book_id, quantity, rack_id, copy_condition=CopyConditionEnum.EXCELENT, copy_available=CopyAvaliabilityEnum.AVALIABLE):
+    def addCopies(book_id, quantity, rack_id, copy_condition=CopyConditionEnum.EXCELENT, copy_available=CopyAvaliabilityEnum.AVALIABLE):
         try:
             with db.session.begin():
                 book = Books.query.get(book_id)
@@ -32,20 +32,15 @@ class CopiesRepository:
             raise e
 
     @staticmethod
-    def get_all_copies():
+    def getAllCopies():
         return Copies.query.all()
 
     @staticmethod
-    def get_copies_by_book_id(book_id):
+    def getCopiesByBook(book_id):
         return Copies.query.filter_by(book_id=book_id).all()
 
     @staticmethod
-    def get_copies_by_book_name(book_name):
-        return Copies.query.join(Books, Copies.book_id == Books.book_id)\
-            .filter(Books.book_name.ilike(f"%{book_name}%")).all()
-
-    @staticmethod
-    def update_copy(copy_id, **kwargs):
+    def updateCopy(copy_id, **kwargs):
         try:
             with db.session.begin():
                 copy = Copies.query.get_or_404(copy_id)
@@ -62,7 +57,7 @@ class CopiesRepository:
             raise e
 
     @staticmethod
-    def update_all_copies(book_id, **kwargs):
+    def updateAllCopies(book_id, **kwargs):
         try:
              with db.session.begin():
                 copies = Copies.query.filter_by(book_id=book_id).all()
@@ -80,7 +75,7 @@ class CopiesRepository:
             raise e
 
     @staticmethod
-    def delete_copy(copy_id):
+    def deleteCopy(copy_id):
         try:
             with db.session.begin():
                 copy = Copies.query.get(copy_id)

@@ -6,11 +6,11 @@ from app.enums import CopyAvaliabilityEnum
 class BorrowRepository:
 
     @staticmethod
-    def add_new_borrowing(user_id, copy_id, borrow_date):
+    def addNewBorrowing(user_id, copy_id, borrow_date):
         try:
             with db.session.begin():
                 copy = Copies.query.get(copy_id)
-                if not copy or copy.copy_available != CopyAvaliabilityEnum.YES:
+                if not copy or copy.copy_available != CopyAvaliabilityEnum.AVALIABLE:
                     raise ValueError("Copy not available for borrowing")
 
                 new_borrowing = Borrowing(
@@ -20,7 +20,7 @@ class BorrowRepository:
                 )
                 db.session.add(new_borrowing)
                 
-                copy.copy_available = CopyAvaliabilityEnum.NO
+                copy.copy_available = CopyAvaliabilityEnum.UNAVALIABLE
 
                 book = Books.query.get(copy.book_id)
                 book.available_stock = max(0, book.available_stock - 1)
@@ -32,43 +32,37 @@ class BorrowRepository:
             raise e
 
     @staticmethod
-    def get_all_borrowings():
+    def getAllBorrowings():
         return Borrowing.query.all()
 
     @staticmethod
-    def get_borrowing_by_id(borrow_id):
+    def getBorrowingById(borrow_id):
         return Borrowing.query.get_or_404(borrow_id)
 
     @staticmethod
-    def get_borrowings_by_user_id(user_id):
+    def getBorrowingsByUserId(user_id):
         return Borrowing.query.filter_by(user_id=user_id).all()
 
     @staticmethod
-    def get_borrowings_by_copy_id(copy_id):
+    def getBorrowingsByCopyId(copy_id):
         return Borrowing.query.filter_by(copy_id=copy_id).all()
 
-    @staticmethod
-    def get_borrowings_by_return_date(return_date):
-        return Borrowing.query.filter_by(return_date=return_date).all()
 
     @staticmethod
-    def get_borrowings_by_user_name(user_name):
+    def usersBorrowing(user_name):
         return Borrowing.query.join(User, Borrowing.user_id == User.user_id)\
             .filter(User.user_name == user_name).all()
 
     @staticmethod
-    def delete_borrowing(borrow_id, user_id):
+    def deleteBorrowing(borrow_id):
         try:
             with db.session.begin():
                 borrowing = Borrowing.query.get(borrow_id)
                 if not borrowing:
                     raise ValueError("Borrowing not found")
 
-                if borrowing.user_id != user_id:
-                    raise ValueError("User did not borrow this book")
-
                 copy = Copies.query.get(borrowing.copy_id)
-                copy.copy_available = CopyAvaliabilityEnum.YES
+                copy.copy_available = CopyAvaliabilityEnum.AVALIABLE 
                 
                 book = Books.query.get(copy.book_id)
                 book.available_stock += 1

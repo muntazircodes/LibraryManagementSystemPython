@@ -3,43 +3,9 @@ from app.models import Report
 from app.enums import ReportStatusEnum
 
 class ReportRepository:
-
-    @staticmethod
-    def delete_report(report_id):
-        report = Report.query.get(report_id)
-        db.session.delete(report)
-        db.session.commit()
-
-
-    @staticmethod
-    def get_report_by_id(report_id):
-        return Report.query.get(report_id)
-
-
-    @staticmethod
-    def get_report_by_user_id(user_id):
-        return Report.query.filter_by(user_id=user_id).all()
     
     @staticmethod
-    def mark_report(report_id, handled_by=None):
-        report = Report.query.get(report_id)
-        if report is None:
-            return "Report not found"
-        
-        report.report_status = ReportStatusEnum
-        report.handled_by = handled_by
-        
-        try:
-            db.session.commit()
-            return report
-        except Exception as e:
-            db.session.rollback()
-            raise e
-
-
-
-    @staticmethod
-    def create_report(user_id, subject, message, handled_by=None, report_status=ReportStatusEnum.UNSEEN):
+    def createReport(user_id, subject, message, handled_by=None, report_status=ReportStatusEnum.UNSEEN):
         new_report = Report(
             user_id=user_id,
             subject=subject,
@@ -52,7 +18,15 @@ class ReportRepository:
         return new_report    
 
     @staticmethod
-    def update_report(report_id, **kwargs):
+    def getReportById(report_id):
+        return Report.query.get(report_id)
+
+    @staticmethod
+    def getUserReport(user_id):
+        return Report.query.filter_by(user_id=user_id).all()
+
+    @staticmethod
+    def updateReport(report_id, **kwargs):
         report = Report.query.get(report_id)
         if not report:
             raise ValueError("Report not found")
@@ -67,3 +41,26 @@ class ReportRepository:
             db.session.rollback()
             raise e
         return report    
+
+    @staticmethod
+    def markReport(report_id, handled_by=None):
+        report = Report.query.get(report_id)
+        if report is None:
+            return "Report not found"
+        
+        report.report_status = ReportStatusEnum
+        report.handled_by = handled_by
+        
+        try:
+            db.session.commit()
+            return report
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    # DELETE
+    @staticmethod
+    def deleteReport(report_id):
+        report = Report.query.get(report_id)
+        db.session.delete(report)
+        db.session.commit()
