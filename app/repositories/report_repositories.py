@@ -1,5 +1,7 @@
 from app.utils.db import db
 from app.models import Report
+from app.enums import ReportStatusEnum
+
 class ReportRepository:
 
     @staticmethod
@@ -17,24 +19,33 @@ class ReportRepository:
     @staticmethod
     def get_report_by_user_id(user_id):
         return Report.query.filter_by(user_id=user_id).all()
-
-
+    
     @staticmethod
-    def mark_report_handled(report_id, handled_by):
+    def mark_report(report_id, handled_by=None):
         report = Report.query.get(report_id)
-        report.handled = True
+        if report is None:
+            return "Report not found"
+        
+        report.report_status = ReportStatusEnum
         report.handled_by = handled_by
-        db.session.commit()
+        
+        try:
+            db.session.commit()
+            return report
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
 
 
     @staticmethod
-    def create_report(user_id, subject, message, handled_by=None, handled=False):
+    def create_report(user_id, subject, message, handled_by=None, report_status=ReportStatusEnum.UNSEEN):
         new_report = Report(
             user_id=user_id,
             subject=subject,
             message=message,
             handled_by=handled_by,
-            handled=handled
+            report_status=report_status
         )
         db.session.add(new_report)
         db.session.commit()
@@ -46,7 +57,7 @@ class ReportRepository:
         if not report:
             raise ValueError("Report not found")
 
-        allowed_fields = ['subject', 'message', 'handled_by', 'handled']
+        allowed_fields = ['subject', 'message', 'handled_by', 'report_status']
         try:
             for key, value in kwargs.items():
                 if key in allowed_fields and hasattr(report, key):
