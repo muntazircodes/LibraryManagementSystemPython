@@ -9,8 +9,8 @@ class Report(db.Model):
     user_id = db.Column(Integer, ForeignKey('users.user_id'), nullable=False)
     subject = db.Column(String(100), nullable=False)
     message = db.Column(Text, nullable=False)
+    report_status = db.Enum(ReportStatusEnum, nullable=False, default=ReportStatusEnum.UNSEEN) 
     handled_by = db.Column(String(100), nullable=False)
-    handled = db.Enum(ReportStatusEnum, nullable=False, default=ReportStatusEnum.UNSEEN) 
     report_date = db.Column(DateTime, server_default=sql.func.now(), nullable=False)
 
     user = db.relationship('User', back_populates='reports')
