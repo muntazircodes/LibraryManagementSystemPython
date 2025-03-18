@@ -57,7 +57,7 @@ class BookRepository:
         for field in allowed_fields:
             if field in kwargs:
                 value = kwargs[field]
-                if field in ['book_name', 'author', 'publisher', 'book_genre']:
+                if field in allowed_fields:
                     query = query.filter(getattr(Books, field).ilike(f"%{value}%"))
                 else:  # For exact match
                     query = query.filter_by(**{field: value})
