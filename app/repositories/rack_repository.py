@@ -30,24 +30,15 @@ class RacksRepository:
         return Racks.query.filter_by(lib_id=lib_id).all()
 
     @staticmethod
-    def get_rack_by_block(lib_id, block):
-        return Racks.query.filter_by(lib_id=lib_id, block=block).all()
-
-    @staticmethod
-    def get_rack_by_floor(lib_id, floor):
-        return Racks.query.filter_by(lib_id=lib_id, floor=floor).all()
-
-    @staticmethod
-    def get_rack_by_room(lib_id, room):
-        return Racks.query.filter_by(lib_id=lib_id, room=room).all()
-
-    @staticmethod
-    def get_rack_by_locker(lib_id, locker):
-        return Racks.query.filter_by(lib_id=lib_id, locker=locker).all()
-
-    @staticmethod
-    def get_rack_by_rack_no(lib_id, rack_no):
-        return Racks.query.filter_by(lib_id=lib_id, rack_no=rack_no).all()
+    def get_racks_by_filters(lib_id, **kwargs):
+        filters = {'lib_id': lib_id}
+        allowed_filters = ['block', 'floor', 'room', 'locker', 'rack_no']
+        
+        for key, value in kwargs.items():
+            if key in allowed_filters:
+                filters[key] = value
+                
+        return Racks.query.filter_by(**filters).all()
 
     @staticmethod
     def update_rack(rack_id, **kwargs):
