@@ -5,20 +5,19 @@ from app.models import Books, Copies
 class CopiesRepository:
 
     @staticmethod
-    def add_copies(book_id, quantity, rack_id, condition="New", status="Available"):
+    def add_copies(book_id, quantity, rack_id, copy_condition=CopyConditionEnum.EXCELENT, copy_available=CopyAvaliabilityEnum.AVALIABLE):
         try:
             with db.session.begin():
                 book = Books.query.get(book_id)
                 if not book:
-                    raise ValueError("Books not found")
+                    return {"message": "Book not found"}
                         
                 copies = [
                     Copies(
                         book_id=book.book_id,
                         rack_id=rack_id,
-                        copy_condition=condition,
-                        copy_status=status,
-                        copy_available="Yes"
+                        copy_condition=copy_condition,
+                        copy_available=copy_available
                     ) for _ in range(quantity)
                 ]
                         
