@@ -1,4 +1,4 @@
-from app.utils.db import db
+from app.middleware.db import db
 from app.models import Books, Copies
 
 

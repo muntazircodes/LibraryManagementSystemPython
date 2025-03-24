@@ -1,4 +1,4 @@
-from app.utils.db import db
+from app.middleware.db import db
 from app.models import User, Report
 from app.enums import UserRoleEnum, UserStatusEnum
 from ..repositories import LibraryRepository
