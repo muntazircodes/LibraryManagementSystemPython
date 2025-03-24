@@ -1,4 +1,4 @@
-from app.utils.db import db
+from app.middleware.db import db
 from sqlalchemy.sql import func
 from sqlalchemy import String, Integer, Float, DateTime, ForeignKey
 from app.enums import UserRoleEnum, UserStatusEnum

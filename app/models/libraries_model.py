@@ -1,4 +1,4 @@
-from app.utils.db import db
+from app.middleware.db import db
 from sqlalchemy import String, Integer
 from app.enums.libraray_status_enum import LibraryStatusEnum
 

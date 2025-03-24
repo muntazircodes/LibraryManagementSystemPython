@@ -1,4 +1,4 @@
-from app.utils.db import db
+from app.middleware.db import db
 from app.enums import ReportStatusEnum
 from sqlalchemy import String, Integer, DateTime, ForeignKey, Text, sql
 
