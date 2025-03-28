@@ -1,7 +1,12 @@
-from app.utils.responses import Responses
-from app.utils.validators import Validators
-from app.repositories.book_repository import BookRepository, BorrowRepository, ReserveRepository, CopiesRepository
-from app.repositories.user_repository import UserRepository
+from app.middleware import Validators, Responses
+
+from app.repositories import ( 
+    BookRepository, 
+    BorrowRepository, 
+    ReserveRepository, 
+    CopiesRepository, 
+    UserRepository
+)
 from datetime import datetime, timedelta
 
 
