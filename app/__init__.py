@@ -1,6 +1,5 @@
 from flask import Flask
-from app.utils import migrate, jwt
-from app.utils.db import db
+from app.middleware import migrate, jwt, db
 from app.config import Config
 
 def create_app():
